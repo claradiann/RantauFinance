@@ -4,22 +4,29 @@ namespace App\Http\Controllers;
 
 use App\Models\Transaksi;
 use App\Models\Kategori;
-use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class TransaksiController extends Controller
 {
     public function index()
     {
-        $transaksi = Transaksi::with(['user', 'kategori'])->get();
+        $userId = Auth::id();
 
-        $totalPemasukan = Transaksi::whereHas('kategori', function($q){
-            $q->where('tipe', 'pemasukan');
-        })->sum('jumlah');
+        $transaksi = Transaksi::with(['kategori'])
+            ->where('user_id', $userId)
+            ->orderBy('tanggal', 'desc')
+            ->get();
 
-        $totalPengeluaran = Transaksi::whereHas('kategori', function($q){
-            $q->where('tipe', 'pengeluaran');
-        })->sum('jumlah');
+        $totalPemasukan = Transaksi::where('user_id', $userId)
+            ->whereHas('kategori', function($q){
+                $q->where('tipe', 'pemasukan');
+            })->sum('jumlah');
+
+        $totalPengeluaran = Transaksi::where('user_id', $userId)
+            ->whereHas('kategori', function($q){
+                $q->where('tipe', 'pengeluaran');
+            })->sum('jumlah');
 
         return view('transaksi.index', compact(
             'transaksi',
@@ -31,20 +38,26 @@ class TransaksiController extends Controller
     public function create()
     {
         $kategori = Kategori::all();
-        $users = User::all();
 
-        return view('transaksi.create', compact('kategori','users'));
+        return view('transaksi.create', compact('kategori'));
     }
 
     public function store(Request $request)
     {
+        $request->validate([
+            'kategori_id' => 'required|exists:kategori,id',
+            'jumlah' => 'required|numeric|min:1',
+            'tanggal' => 'required|date',
+        ]);
+
         Transaksi::create([
-            'user_id' => $request->user_id,
+            'user_id' => Auth::id(),
             'kategori_id' => $request->kategori_id,
             'jumlah' => $request->jumlah,
             'tanggal' => $request->tanggal,
+            'keterangan' => $request->keterangan,
         ]);
 
-        return redirect('/transaksi');
+        return redirect('/transaksi')->with('success', 'Transaksi berhasil ditambahkan!');
     }
 }

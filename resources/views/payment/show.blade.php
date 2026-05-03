@@ -4,285 +4,260 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pembayaran — RantauFinance</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/auth.css') }}">
     <style>
-        body { background: #f8fafc; }
-        .payment-wrapper {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 2rem 1rem;
-        }
-        .payment-card {
-            background: #fff;
-            border-radius: 20px;
-            box-shadow: 0 4px 30px rgba(0,0,0,0.08);
-            width: 100%;
-            max-width: 680px;
-            overflow: hidden;
+        /* ===== Payment-specific overrides ===== */
+        .payment-brand .brand-content h2 {
+            font-size: 1.6rem;
         }
 
-        /* Header */
-        .payment-header {
-            background: linear-gradient(135deg, #6366f1, #06b6d4);
-            padding: 2rem 2.5rem;
-            color: white;
+        /* Override form panel for payment */
+        .payment-form-panel {
+            overflow-y: auto;
         }
-        .payment-header .logo {
-            font-size: 1.2rem;
-            font-weight: 800;
-            margin-bottom: 1.5rem;
-            opacity: 0.9;
+        .payment-form-panel .auth-form-wrapper {
+            max-width: 520px;
         }
-        .payment-header h1 {
-            font-size: 1.5rem;
-            font-weight: 800;
-            margin-bottom: 0.25rem;
-        }
-        .payment-header p { opacity: 0.85; font-size: 0.9rem; }
 
         /* Steps */
-        .steps {
-            display: flex;
-            gap: 0;
-            padding: 1.25rem 2.5rem;
-            background: #f8fafc;
-            border-bottom: 1px solid #e5e7eb;
-        }
-        .step {
+        .payment-steps {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
-            font-size: 0.8rem;
-            color: #9ca3af;
-            flex: 1;
+            gap: 0;
+            margin-bottom: 2rem;
+            padding: 1rem 1.25rem;
+            background: var(--light);
+            border-radius: 14px;
+            border: 1px solid var(--border);
         }
-        .step.active { color: #6366f1; font-weight: 600; }
-        .step-num {
+        .p-step {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.78rem;
+            color: var(--gray);
+            white-space: nowrap;
+        }
+        .p-step.active { color: var(--primary); font-weight: 600; }
+        .p-step.done { color: var(--success); font-weight: 600; }
+        .p-step-num {
             width: 24px; height: 24px;
             border-radius: 50%;
-            background: #e5e7eb;
-            color: #9ca3af;
+            background: var(--border);
+            color: var(--gray);
             display: flex; align-items: center; justify-content: center;
-            font-size: 0.75rem; font-weight: 700;
+            font-size: 0.7rem; font-weight: 700;
             flex-shrink: 0;
         }
-        .step.active .step-num { background: #6366f1; color: white; }
-        .step-line { flex: 1; height: 1px; background: #e5e7eb; margin: 0 0.5rem; }
-
-        /* Body */
-        .payment-body { padding: 2rem 2.5rem; }
+        .p-step.active .p-step-num { background: var(--primary); color: white; }
+        .p-step.done .p-step-num { background: var(--success); color: white; }
+        .p-step-line { flex: 1; height: 2px; background: var(--border); margin: 0 0.4rem; min-width: 12px; }
+        .p-step-line.done { background: var(--success); }
 
         /* Plan summary */
         .plan-summary {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background: #f5f3ff;
-            border: 1px solid #e0e7ff;
+            background: linear-gradient(135deg, rgba(99,102,241,0.06), rgba(6,182,212,0.06));
+            border: 1px solid rgba(99,102,241,0.15);
             border-radius: 14px;
             padding: 1.25rem 1.5rem;
-            margin-bottom: 1.75rem;
+            margin-bottom: 1.5rem;
         }
-        .plan-summary .plan-info .label {
-            font-size: 0.75rem;
-            color: #6b7280;
+        .plan-summary .ps-info .ps-label {
+            font-size: 0.72rem;
+            color: var(--gray);
             margin-bottom: 2px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
         }
-        .plan-summary .plan-info .name {
-            font-size: 1.1rem;
+        .plan-summary .ps-info .ps-name {
+            font-size: 1.05rem;
             font-weight: 800;
-            color: #1e293b;
+            color: var(--dark);
         }
-        .plan-summary .plan-price {
-            font-size: 1.4rem;
+        .plan-summary .ps-price {
+            font-size: 1.3rem;
             font-weight: 800;
-            color: #6366f1;
+            color: var(--primary);
+        }
+        .plan-summary .ps-price span {
+            font-size: 0.75rem;
+            color: var(--gray);
+            font-weight: 500;
         }
 
         /* Metode tabs */
         .metode-tabs {
             display: flex;
             gap: 8px;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.25rem;
         }
         .tab-btn {
             flex: 1;
             padding: 0.7rem;
-            border: 2px solid #e5e7eb;
+            border: 2px solid var(--border);
             border-radius: 12px;
             background: white;
             cursor: pointer;
             font-family: 'Inter', sans-serif;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             font-weight: 600;
-            color: #6b7280;
-            transition: all 0.2s;
+            color: var(--gray);
+            transition: all 0.25s;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 0.4rem;
         }
+        .tab-btn:hover { border-color: var(--primary-light); }
         .tab-btn.active {
-            border-color: #6366f1;
-            background: #f5f3ff;
-            color: #6366f1;
+            border-color: var(--primary);
+            background: rgba(99,102,241,0.06);
+            color: var(--primary);
         }
 
         /* Instruksi box */
         .instruksi-box {
-            background: #f8fafc;
-            border: 1px solid #e5e7eb;
+            background: var(--light);
+            border: 1px solid var(--border);
             border-radius: 14px;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
+            padding: 1.25rem;
+            margin-bottom: 1.25rem;
         }
         .instruksi-box h3 {
-            font-size: 0.85rem;
+            font-size: 0.82rem;
             font-weight: 700;
-            color: #374151;
-            margin-bottom: 1rem;
+            color: var(--dark-2);
+            margin-bottom: 0.85rem;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
 
-        /* QRIS display */
-        .qris-container {
-            text-align: center;
-        }
+        /* QRIS */
+        .qris-container { text-align: center; }
         .qris-placeholder {
-            width: 200px;
-            height: 200px;
+            width: 180px; height: 180px;
             background: white;
-            border: 2px dashed #d1d5db;
+            border: 2px dashed var(--gray-light);
             border-radius: 12px;
             margin: 0 auto 1rem;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: #9ca3af;
-            font-size: 0.85rem;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            color: var(--gray);
+            font-size: 0.82rem;
         }
-        .qris-placeholder .qr-icon { font-size: 3rem; margin-bottom: 0.5rem; }
-        .qris-note {
-            font-size: 0.8rem;
-            color: #6b7280;
-            text-align: center;
-        }
+        .qris-placeholder .qr-icon { font-size: 2.5rem; margin-bottom: 0.5rem; }
+        .qris-note { font-size: 0.78rem; color: var(--gray); }
 
-        /* Rekening display */
-        .rekening-info { display: flex; flex-direction: column; gap: 0.75rem; }
+        /* Rekening */
+        .rekening-info { display: flex; flex-direction: column; gap: 0.5rem; }
         .rek-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0.75rem 1rem;
+            padding: 0.65rem 0.85rem;
             background: white;
-            border: 1px solid #e5e7eb;
+            border: 1px solid var(--border);
             border-radius: 10px;
         }
-        .rek-row .rek-label {
-            font-size: 0.8rem;
-            color: #9ca3af;
-        }
-        .rek-row .rek-value {
-            font-weight: 700;
-            color: #1e293b;
-            font-size: 0.95rem;
-        }
-        .rek-row .rek-value.highlight {
-            color: #6366f1;
-            font-size: 1.1rem;
+        .rek-label { font-size: 0.78rem; color: var(--gray); }
+        .rek-value { font-weight: 700; color: var(--dark); font-size: 0.9rem; }
+        .rek-value.highlight {
+            color: var(--primary);
+            font-size: 1rem;
             letter-spacing: 1px;
         }
         .copy-btn {
-            background: #f3f4f6;
+            background: rgba(99,102,241,0.08);
             border: none;
             border-radius: 6px;
-            padding: 0.3rem 0.6rem;
-            font-size: 0.75rem;
-            font-weight: 600;
-            color: #6366f1;
+            padding: 0.25rem 0.6rem;
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--primary);
             cursor: pointer;
             transition: background 0.2s;
+            font-family: 'Inter', sans-serif;
         }
-        .copy-btn:hover { background: #e0e7ff; }
+        .copy-btn:hover { background: rgba(99,102,241,0.15); }
 
         /* Nominal warning */
         .nominal-warning {
-            background: #fef3c7;
+            background: linear-gradient(135deg, #fef3c7, #fef9c3);
             border: 1px solid #fbbf24;
             border-radius: 10px;
-            padding: 0.75rem 1rem;
-            font-size: 0.82rem;
+            padding: 0.7rem 1rem;
+            font-size: 0.78rem;
             color: #92400e;
-            margin-top: 0.75rem;
+            margin-top: 0.6rem;
             display: flex;
             gap: 0.5rem;
+            align-items: center;
         }
 
-        /* Upload section */
+        /* Upload */
+        .upload-section { margin-bottom: 0.5rem; }
         .upload-section h3 {
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             font-weight: 700;
-            color: #1e293b;
-            margin-bottom: 0.5rem;
+            color: var(--dark);
+            margin-bottom: 0.35rem;
         }
-        .upload-section p {
-            font-size: 0.82rem;
-            color: #6b7280;
-            margin-bottom: 1rem;
+        .upload-section > p {
+            font-size: 0.78rem;
+            color: var(--gray);
+            margin-bottom: 0.75rem;
         }
         .upload-area {
-            border: 2px dashed #d1d5db;
+            border: 2px dashed var(--gray-light);
             border-radius: 14px;
-            padding: 2rem;
+            padding: 1.5rem;
             text-align: center;
             cursor: pointer;
-            transition: all 0.2s;
-            background: #f9fafb;
+            transition: all 0.25s;
+            background: var(--light);
         }
         .upload-area:hover, .upload-area.drag-over {
-            border-color: #6366f1;
-            background: #f5f3ff;
+            border-color: var(--primary);
+            background: rgba(99,102,241,0.04);
         }
-        .upload-area .upload-icon { font-size: 2.5rem; margin-bottom: 0.5rem; }
-        .upload-area p {
-            font-size: 0.85rem;
-            color: #6b7280;
-            margin-bottom: 0;
-        }
-        .upload-area strong { color: #6366f1; }
+        .upload-area .upload-icon { font-size: 2rem; margin-bottom: 0.4rem; }
+        .upload-area p { font-size: 0.82rem; color: var(--gray); margin: 0; }
+        .upload-area strong { color: var(--primary); }
         #buktiInput { display: none; }
 
-        /* Preview */
         .preview-img {
-            max-width: 100%;
-            max-height: 200px;
+            max-width: 100%; max-height: 160px;
             border-radius: 10px;
             margin-top: 0.75rem;
             display: none;
+            border: 1px solid var(--border);
         }
 
-        /* Submit btn */
+        /* Submit */
         .btn-submit-payment {
             width: 100%;
-            padding: 1rem;
-            background: linear-gradient(135deg, #6366f1, #06b6d4);
+            padding: 0.9rem;
+            background: var(--gradient-1);
             color: white;
             border: none;
             border-radius: 12px;
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-weight: 700;
             cursor: pointer;
             font-family: 'Inter', sans-serif;
-            margin-top: 1.5rem;
+            margin-top: 1rem;
             transition: all 0.3s;
             box-shadow: 0 4px 15px rgba(99,102,241,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
         }
         .btn-submit-payment:hover {
             transform: translateY(-2px);
@@ -292,78 +267,108 @@
             opacity: 0.5;
             cursor: not-allowed;
             transform: none;
+            box-shadow: none;
         }
 
-        /* Alert */
-        .alert-info {
-            padding: 0.85rem 1rem;
-            border-radius: 12px;
-            background: rgba(6,182,212,0.08);
-            border: 1px solid rgba(6,182,212,0.3);
+        /* Pending info box */
+        .pending-info-box {
+            background: rgba(6,182,212,0.06);
+            border: 1px solid rgba(6,182,212,0.2);
+            border-radius: 14px;
+            padding: 1.25rem;
+            font-size: 0.85rem;
             color: #0e7490;
-            font-size: 0.85rem;
-            margin-bottom: 1.5rem;
-            display: flex;
-            align-items: flex-start;
-            gap: 0.5rem;
+            line-height: 1.7;
         }
-        .alert-error {
-            padding: 0.85rem 1rem;
-            border-radius: 12px;
-            background: rgba(239,68,68,0.08);
-            border: 1px solid rgba(239,68,68,0.2);
-            color: #dc2626;
-            font-size: 0.85rem;
-            margin-bottom: 1.5rem;
+        .pending-info-box a {
+            color: var(--primary);
+            font-weight: 700;
+            text-decoration: none;
+        }
+        .pending-info-box a:hover { text-decoration: underline; }
+
+        /* Section label */
+        .section-label-sm {
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: var(--dark-2);
+            margin-bottom: 0.65rem;
         }
 
-        @media (max-width: 640px) {
-            .payment-body { padding: 1.5rem; }
-            .payment-header { padding: 1.5rem; }
-            .steps { padding: 1rem 1.5rem; }
+        /* Responsive */
+        @media (max-width: 968px) {
+            .payment-form-panel .auth-form-wrapper { max-width: 100%; }
         }
     </style>
 </head>
 <body>
 
-<div class="payment-wrapper">
-    <div class="payment-card">
+<div class="auth-container">
+    {{-- Left: Branding --}}
+    <div class="auth-brand payment-brand">
+        <div class="brand-content">
+            <div class="brand-logo">
+                <span>💰</span> RantauFinance
+            </div>
+            <h2>Satu langkah lagi untuk akun premiummu</h2>
+            <p>Transfer pembayaran dan nikmati semua fitur premium Rantau Finance untuk mengelola keuanganmu lebih optimal.</p>
 
-        {{-- Header --}}
-        <div class="payment-header">
-            <div class="logo">💰 RantauFinance</div>
-            <h1>Selesaikan Pembayaran</h1>
-            <p>Halo, {{ $user->name }}! Transfer sesuai nominal lalu upload buktinya.</p>
-        </div>
-
-        {{-- Steps --}}
-        <div class="steps">
-            <div class="step active">
-                <div class="step-num">1</div>
-                <span>Pilih Metode</span>
-            </div>
-            <div class="step-line"></div>
-            <div class="step active">
-                <div class="step-num">2</div>
-                <span>Transfer</span>
-            </div>
-            <div class="step-line"></div>
-            <div class="step">
-                <div class="step-num">3</div>
-                <span>Konfirmasi Admin</span>
-            </div>
-            <div class="step-line"></div>
-            <div class="step">
-                <div class="step-num">4</div>
-                <span>Akun Aktif</span>
+            <div class="brand-features">
+                <div class="brand-feature">
+                    <div class="feat-icon">🔐</div>
+                    Transaksi aman & terenkripsi
+                </div>
+                <div class="brand-feature">
+                    <div class="feat-icon">⚡</div>
+                    Aktivasi cepat (maks 1×24 jam)
+                </div>
+                <div class="brand-feature">
+                    <div class="feat-icon">📧</div>
+                    Password dikirim via email
+                </div>
+                <div class="brand-feature">
+                    <div class="feat-icon">💎</div>
+                    Akses semua fitur premium
+                </div>
             </div>
         </div>
+    </div>
 
-        <div class="payment-body">
+    {{-- Right: Payment Form --}}
+    <div class="auth-form-panel payment-form-panel">
+        <div class="auth-form-wrapper">
+            <div class="auth-form-header">
+                <div class="mobile-logo">💰 RantauFinance</div>
+                <h1>Selesaikan Pembayaran 💳</h1>
+                <p>Halo, {{ $user->name }}! Transfer sesuai nominal lalu upload buktinya.</p>
+            </div>
+
+            {{-- Steps --}}
+            <div class="payment-steps">
+                <div class="p-step done">
+                    <div class="p-step-num">✓</div>
+                    <span>Daftar</span>
+                </div>
+                <div class="p-step-line done"></div>
+                <div class="p-step active">
+                    <div class="p-step-num">2</div>
+                    <span>Bayar</span>
+                </div>
+                <div class="p-step-line"></div>
+                <div class="p-step">
+                    <div class="p-step-num">3</div>
+                    <span>Verifikasi</span>
+                </div>
+                <div class="p-step-line"></div>
+                <div class="p-step">
+                    <div class="p-step-num">4</div>
+                    <span>Aktif</span>
+                </div>
+            </div>
 
             {{-- Alerts --}}
             @if(session('success'))
-                <div class="alert-info">✅ {{ session('success') }}</div>
+                <div class="alert-success">✅ {{ session('success') }}</div>
             @endif
             @if($errors->any())
                 <div class="alert-error">
@@ -375,24 +380,24 @@
 
             {{-- Sudah ada payment pending --}}
             @if($existingPayment)
-                <div class="alert-info">
+                <div class="pending-info-box">
                     ⏳ Bukti pembayaran kamu sudah kami terima dan sedang dalam proses verifikasi.
-                    Password akan dikirim ke <strong>{{ $user->email }}</strong> setelah dikonfirmasi (maks 1x24 jam).
+                    Password akan dikirim ke <strong>{{ $user->email }}</strong> setelah dikonfirmasi (maks 1×24 jam).
                     <br><br>
-                    <a href="{{ route('payment.status', $user->id) }}" style="color: #0e7490; font-weight:700;">Pantau status →</a>
+                    <a href="{{ route('payment.status', $user->id) }}">Pantau status →</a>
                 </div>
             @else
 
             {{-- Plan Summary --}}
             <div class="plan-summary">
-                <div class="plan-info">
-                    <div class="label">Paket yang dipilih</div>
-                    <div class="name">
+                <div class="ps-info">
+                    <div class="ps-label">Paket yang dipilih</div>
+                    <div class="ps-name">
                         {{ $user->plan === 'personal' ? '🔵' : '🟣' }}
                         {{ ucfirst($user->plan) }}
                     </div>
                 </div>
-                <div class="plan-price">Rp {{ number_format($nominal, 0, ',', '.') }}<span style="font-size:0.8rem;color:#6b7280;font-weight:500;">/bulan</span></div>
+                <div class="ps-price">Rp {{ number_format($nominal, 0, ',', '.') }}<span>/bulan</span></div>
             </div>
 
             {{-- Form Upload --}}
@@ -400,8 +405,8 @@
                 @csrf
 
                 {{-- Pilih Metode --}}
-                <div style="margin-bottom: 1.5rem;">
-                    <p style="font-size:0.85rem;font-weight:700;color:#374151;margin-bottom:0.75rem;">Pilih Metode Pembayaran</p>
+                <div style="margin-bottom: 1.25rem;">
+                    <p class="section-label-sm">Pilih Metode Pembayaran</p>
                     <div class="metode-tabs">
                         <button type="button" class="tab-btn active" onclick="selectMetode('transfer')" id="tab-transfer">
                             🏦 Transfer Bank
@@ -453,7 +458,7 @@
                             <div class="qr-icon">⬛</div>
                             <p>QR Code kamu</p>
                         </div>
-                        {{-- Ganti dengan: <img src="{{ asset('images/qris.png') }}" width="200"> --}}
+                        {{-- Ganti dengan: <img src="{{ asset('images/qris.png') }}" width="180"> --}}
                         <p class="qris-note">Scan menggunakan aplikasi bank atau dompet digital apapun</p>
                         <p class="qris-note" style="margin-top:0.5rem;">Nominal: <strong>Rp {{ number_format($nominal, 0, ',', '.') }}</strong></p>
                     </div>
@@ -467,14 +472,14 @@
                     <div class="upload-area" id="uploadArea" onclick="document.getElementById('buktiInput').click()">
                         <div class="upload-icon">🖼️</div>
                         <p><strong>Klik untuk pilih file</strong> atau drag & drop di sini</p>
-                        <p style="margin-top:0.25rem;font-size:0.75rem;">JPG, PNG, WEBP — maks 3MB</p>
+                        <p style="margin-top:0.25rem;font-size:0.72rem;">JPG, PNG, WEBP — maks 3MB</p>
                     </div>
                     <input type="file" id="buktiInput" name="bukti" accept="image/*" onchange="previewFile(event)">
                     <img id="previewImg" class="preview-img" alt="Preview bukti">
-                    <p id="fileName" style="font-size:0.8rem;color:#6366f1;margin-top:0.5rem;display:none;"></p>
+                    <p id="fileName" style="font-size:0.78rem;color:var(--primary);margin-top:0.5rem;display:none;font-weight:600;"></p>
 
                     @error('bukti')
-                        <p style="color:#dc2626;font-size:0.82rem;margin-top:0.5rem;">{{ $message }}</p>
+                        <p style="color:var(--danger);font-size:0.8rem;margin-top:0.5rem;">{{ $message }}</p>
                     @enderror
                 </div>
 
@@ -482,13 +487,16 @@
                     📤 Kirim Bukti Pembayaran
                 </button>
 
-                <p style="text-align:center;font-size:0.8rem;color:#9ca3af;margin-top:1rem;">
+                <p style="text-align:center;font-size:0.78rem;color:var(--gray);margin-top:1rem;line-height:1.5;">
                     Password akan dikirim ke <strong>{{ $user->email }}</strong> setelah admin memverifikasi (maks 1×24 jam)
                 </p>
             </form>
 
             @endif {{-- end if existingPayment --}}
 
+            <div class="auth-footer">
+                <a href="/">← Kembali ke Beranda</a>
+            </div>
         </div>
     </div>
 </div>

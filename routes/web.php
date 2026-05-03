@@ -5,6 +5,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\TransaksiController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\AdminController;
 
 /*
 |--------------------------------------------------------------------------
@@ -49,8 +50,9 @@ Route::middleware(['auth', 'plan.active'])->group(function () {
     // Transaksi
     Route::get('/transaksi',        [TransaksiController::class, 'index']) ->name('transaksi.index');
     Route::get('/transaksi/create', [TransaksiController::class, 'create'])->name('transaksi.create');
-    Route::post('/transaksi',       [TransaksiController::class, 'store']) ->name('transaksi.store');
-
+    Route::post('/transaksi',       [TransaksiController::class, 'store'])
+    ->middleware('transaksi.limit')
+    ->name('transaksi.store');
 });
 
 /*
@@ -62,4 +64,17 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile',    [ProfileController::class, 'edit'])   ->name('profile.edit');
     Route::patch('/profile',  [ProfileController::class, 'update']) ->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+
+Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+
+    Route::get('/',                              [AdminController::class, 'index'])         ->name('index');
+    Route::get('/payments/{payment}',            [AdminController::class, 'paymentDetail']) ->name('payment.detail');
+    Route::post('/payments/{payment}/confirm',   [AdminController::class, 'confirm'])       ->name('payment.confirm');
+    Route::post('/payments/{payment}/reject',    [AdminController::class, 'reject'])        ->name('payment.reject');
+    Route::get('/users',                         [AdminController::class, 'users'])         ->name('users');
+    Route::post('/users/{user}/suspend',         [AdminController::class, 'suspend'])       ->name('user.suspend');
+    Route::post('/users/{user}/unsuspend',       [AdminController::class, 'unsuspend'])     ->name('user.unsuspend');
+    Route::post('/users/{user}/reset-password',  [AdminController::class, 'resetPassword']) ->name('user.reset-password');
+
 });

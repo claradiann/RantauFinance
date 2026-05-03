@@ -1,46 +1,419 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
-    <title>Tambah Transaksi</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tambah Transaksi — Rantau Finance</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
+    <style>
+        /* ===== Form Styles ===== */
+        .form-card {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+            max-width: 640px;
+        }
+        .form-card-header {
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--border);
+            background: var(--light);
+        }
+        .form-card-header h2 {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--dark);
+            margin-bottom: 0.25rem;
+        }
+        .form-card-header p {
+            font-size: 0.85rem;
+            color: var(--gray);
+        }
+        .form-card-body {
+            padding: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .form-label {
+            display: block;
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: var(--dark-2);
+            margin-bottom: 0.5rem;
+        }
+        .form-label .required {
+            color: var(--danger);
+        }
+        .form-input,
+        .form-select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 0.9rem;
+            font-family: 'Inter', sans-serif;
+            color: var(--dark);
+            background: var(--white);
+            transition: all 0.25s;
+            outline: none;
+            -webkit-appearance: none;
+        }
+        .form-select {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2394a3b8' d='M6 8.825L1.175 4 2.238 2.938 6 6.7l3.763-3.763L10.825 4z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            padding-right: 2.5rem;
+        }
+        .form-input::placeholder { color: var(--gray-light); }
+        .form-input:focus,
+        .form-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(99,102,241,0.08);
+        }
+        .form-input.error { border-color: var(--danger); }
+
+        .form-error {
+            font-size: 0.78rem;
+            color: var(--danger);
+            margin-top: 0.35rem;
+            font-weight: 500;
+        }
+
+        .form-hint {
+            font-size: 0.75rem;
+            color: var(--gray);
+            margin-top: 0.35rem;
+        }
+
+        /* Amount input with prefix */
+        .amount-input-wrapper {
+            position: relative;
+        }
+        .amount-input-wrapper .prefix {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--gray);
+            pointer-events: none;
+        }
+        .amount-input-wrapper .form-input {
+            padding-left: 2.5rem;
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        /* Inline row */
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        @media (max-width: 480px) {
+            .form-row { grid-template-columns: 1fr; }
+        }
+
+        /* Submit buttons */
+        .form-actions {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+        }
+        .btn-submit {
+            flex: 1;
+            padding: 0.85rem 1.5rem;
+            background: var(--gradient-1);
+            color: white;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(99,102,241,0.25);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(99,102,241,0.35);
+        }
+        .btn-cancel {
+            padding: 0.85rem 1.5rem;
+            background: var(--light);
+            color: var(--gray);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            text-decoration: none;
+            transition: all 0.2s;
+            text-align: center;
+        }
+        .btn-cancel:hover {
+            border-color: var(--primary-light);
+            color: var(--primary);
+        }
+
+        /* Success alert */
+        .alert-success-custom {
+            padding: 1rem 1.25rem;
+            border-radius: var(--radius-sm);
+            background: var(--success-bg);
+            border: 1px solid rgba(16,185,129,0.2);
+            color: var(--success);
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Type selector pills */
+        .type-pills {
+            display: flex;
+            gap: 0.5rem;
+        }
+        .type-pill {
+            flex: 1;
+            padding: 0.65rem 1rem;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            background: var(--white);
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--gray);
+            transition: all 0.25s;
+            text-align: center;
+        }
+        .type-pill:hover { border-color: var(--primary-light); }
+        .type-pill.active-income {
+            border-color: var(--success);
+            background: var(--success-bg);
+            color: var(--success);
+        }
+        .type-pill.active-expense {
+            border-color: var(--danger);
+            background: var(--danger-bg);
+            color: var(--danger);
+        }
+    </style>
 </head>
-<body class="container mt-5">
+<body>
 
-<h2>Tambah Transaksi</h2>
+{{-- Mobile Header --}}
+<div class="mobile-header">
+    <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+    <span style="font-weight:700;font-size:1rem;">💰 RantauFinance</span>
+    <div style="width:40px;"></div>
+</div>
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
 
-<form action="/transaksi/store" method="POST">
-    @csrf
+<div class="app-layout">
+    {{-- ===== SIDEBAR ===== --}}
+    <aside class="sidebar" id="sidebar">
+        <a href="/" class="sidebar-logo">
+            <div class="logo-icon">💰</div>
+            <span class="logo-text">RantauFinance</span>
+        </a>
 
-    <div class="mb-3">
-        <label>User</label>
-        <select name="user_id" class="form-control">
-            @foreach($users as $u)
-            <option value="{{ $u->id }}">{{ $u->name }}</option>
-            @endforeach
-        </select>
-    </div>
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title">Menu</div>
+                <a href="/dashboard" class="nav-item">
+                    <span class="nav-icon">📊</span> Dashboard
+                </a>
+                <a href="/transaksi" class="nav-item">
+                    <span class="nav-icon">💳</span> Transaksi
+                </a>
+                <a href="/transaksi/create" class="nav-item active">
+                    <span class="nav-icon">➕</span> Tambah Transaksi
+                </a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">Lainnya</div>
+                <a href="#" class="nav-item">
+                    <span class="nav-icon">📁</span> Kategori
+                </a>
+                <a href="#" class="nav-item">
+                    <span class="nav-icon">🎯</span> Budget
+                </a>
+                <a href="#" class="nav-item">
+                    <span class="nav-icon">📈</span> Laporan
+                </a>
+            </div>
+        </nav>
 
-    <div class="mb-3">
-        <label>Kategori</label>
-        <select name="kategori_id" class="form-control">
-            @foreach($kategori as $k)
-            <option value="{{ $k->id }}">{{ $k->nama }}</option>
-            @endforeach
-        </select>
-    </div>
+        <div class="sidebar-footer">
+            <div class="user-card">
+                <div class="user-avatar">
+                    {{ strtoupper(substr(auth()->user()->name, 0, 2)) }}
+                </div>
+                <div class="user-info">
+                    <div class="name">{{ auth()->user()->name }}</div>
+                    <div class="role">{{ ucfirst(auth()->user()->plan ?? 'Starter') }}</div>
+                </div>
+            </div>
+            <form method="POST" action="/logout">
+                @csrf
+                <button type="submit" class="logout-btn">
+                    <span>🚪</span> Keluar
+                </button>
+            </form>
+        </div>
+    </aside>
 
-    <div class="mb-3">
-        <label>Jumlah</label>
-        <input type="number" name="jumlah" class="form-control">
-    </div>
+    {{-- ===== MAIN ===== --}}
+    <main class="main-content">
+        {{-- Top Bar --}}
+        <div class="top-bar">
+            <div class="top-bar-left">
+                <h1>Tambah Transaksi</h1>
+                <p>Catat pemasukan atau pengeluaran baru</p>
+            </div>
+            <div class="top-bar-right">
+                <a href="/transaksi" class="btn-add" style="background:var(--white);color:var(--dark-3);border:1px solid var(--border);box-shadow:none;">
+                    ← Kembali
+                </a>
+            </div>
+        </div>
 
-    <div class="mb-3">
-        <label>Tanggal</label>
-        <input type="date" name="tanggal" class="form-control">
-    </div>
+        @if(session('success'))
+            <div class="alert-success-custom">
+                ✅ {{ session('success') }}
+            </div>
+        @endif
 
-    <button class="btn btn-primary">Simpan</button>
-</form>
+        {{-- Form Card --}}
+        <div class="form-card">
+            <div class="form-card-header">
+                <h2>📝 Detail Transaksi</h2>
+                <p>Isi informasi transaksi yang ingin dicatat</p>
+            </div>
 
+            <div class="form-card-body">
+                <form action="/transaksi/store" method="POST" id="transactionForm">
+                    @csrf
+
+                    {{-- Kategori --}}
+                    <div class="form-group">
+                        <label class="form-label">
+                            Kategori <span class="required">*</span>
+                        </label>
+                        <select name="kategori_id" class="form-select {{ $errors->has('kategori_id') ? 'error' : '' }}" required>
+                            <option value="" disabled selected>Pilih kategori...</option>
+                            @php
+                                $pemasukanKategori = $kategori->where('tipe', 'pemasukan');
+                                $pengeluaranKategori = $kategori->where('tipe', 'pengeluaran');
+                            @endphp
+                            @if($pemasukanKategori->count() > 0)
+                                <optgroup label="📈 Pemasukan">
+                                    @foreach($pemasukanKategori as $k)
+                                        <option value="{{ $k->id }}" {{ old('kategori_id') == $k->id ? 'selected' : '' }}>
+                                            {{ $k->nama }}
+                                        </option>
+                                    @endforeach
+                                </optgroup>
+                            @endif
+                            @if($pengeluaranKategori->count() > 0)
+                                <optgroup label="📉 Pengeluaran">
+                                    @foreach($pengeluaranKategori as $k)
+                                        <option value="{{ $k->id }}" {{ old('kategori_id') == $k->id ? 'selected' : '' }}>
+                                            {{ $k->nama }}
+                                        </option>
+                                    @endforeach
+                                </optgroup>
+                            @endif
+                        </select>
+                        @error('kategori_id')
+                            <p class="form-error">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    {{-- Jumlah & Tanggal --}}
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">
+                                Jumlah <span class="required">*</span>
+                            </label>
+                            <div class="amount-input-wrapper">
+                                <span class="prefix">Rp</span>
+                                <input type="number" name="jumlah" class="form-input {{ $errors->has('jumlah') ? 'error' : '' }}"
+                                       value="{{ old('jumlah') }}" placeholder="0" min="1" required>
+                            </div>
+                            @error('jumlah')
+                                <p class="form-error">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">
+                                Tanggal <span class="required">*</span>
+                            </label>
+                            <input type="date" name="tanggal" class="form-input {{ $errors->has('tanggal') ? 'error' : '' }}"
+                                   value="{{ old('tanggal', date('Y-m-d')) }}" required>
+                            @error('tanggal')
+                                <p class="form-error">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </div>
+
+                    {{-- Keterangan --}}
+                    <div class="form-group">
+                        <label class="form-label">Keterangan</label>
+                        <input type="text" name="keterangan" class="form-input"
+                               value="{{ old('keterangan') }}" placeholder="Contoh: Gaji bulan Mei, Belanja mingguan, dll...">
+                        <p class="form-hint">Opsional — tambahkan catatan untuk referensi</p>
+                    </div>
+
+                    {{-- Actions --}}
+                    <div class="form-actions">
+                        <a href="/transaksi" class="btn-cancel">Batal</a>
+                        <button type="submit" class="btn-submit">
+                            💾 Simpan Transaksi
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('open');
+    document.getElementById('sidebarOverlay').classList.toggle('open');
+}
+
+// Animate card on load
+document.addEventListener('DOMContentLoaded', () => {
+    const card = document.querySelector('.form-card');
+    if (card) {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        card.style.transition = 'all 0.5s ease';
+        requestAnimationFrame(() => {
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+        });
+    }
+});
+</script>
 </body>
 </html>

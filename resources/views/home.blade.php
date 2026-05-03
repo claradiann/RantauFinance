@@ -23,7 +23,7 @@
     </ul>
     <div class="nav-cta">
         <a href="/login" class="btn-outline-custom">Masuk</a>
-        <a href="/register" class="btn-primary-custom">Daftar Gratis</a>
+        <a href="/register" class="btn-primary-custom">Daftar</a>
     </div>
 </nav>
 
