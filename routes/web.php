@@ -93,5 +93,5 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('/users/{user}/suspend',         [AdminController::class, 'suspend'])       ->name('user.suspend');
     Route::post('/users/{user}/unsuspend',       [AdminController::class, 'unsuspend'])     ->name('user.unsuspend');
     Route::post('/users/{user}/reset-password',  [AdminController::class, 'resetPassword']) ->name('user.reset-password');
-
+    Route::patch('/users/{user}/change-plan',    [AdminController::class, 'changePlan'])    ->name('user.change-plan');
 });

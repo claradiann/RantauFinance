@@ -10,6 +10,10 @@ class DashboardController extends Controller
 {
     public function index(FinanceService $finance)
     {
+        if (Auth::user()->is_admin) {
+            return redirect()->route('admin.index');
+        }
+        
         $userId = Auth::id();
         $now = Carbon::now();
         $currentMonth = $now->month;

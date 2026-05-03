@@ -62,7 +62,8 @@
                 </div>
                 <div class="user-info">
                     <div class="name">{{ auth()->user()->name }}</div>
-                    <div class="role">Starter
+                    <div class="role">
+                        {{ auth()->user()->is_admin ? '⚙️ Administrator' : auth()->user()->planLabel() }}
                     </div>
                 </div>
             </div>

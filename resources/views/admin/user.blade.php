@@ -31,8 +31,15 @@
         </form>
     </nav>
     <div class="sidebar-footer">
-        Logged in sebagai<br>
-        <strong>{{ auth()->user()->name }}</strong>
+        <div class="user-card">
+            <div class="user-avatar">
+                {{ strtoupper(substr(auth()->user()->name, 0, 2)) }}
+            </div>
+            <div class="user-info">
+                <div class="name">{{ auth()->user()->name }}</div>
+                <div class="role">⚙️ Administrator</div>
+            </div>
+        </div>
     </div>
 </aside>
 
@@ -136,8 +143,15 @@
                         <td style="color:var(--gray-2);font-size:0.8rem;">{{ $user->created_at->format('d M Y') }}</td>
                         <td>
                             <div class="btn-actions">
-                                {{-- Reset Password (hanya untuk user berbayar) --}}
-                                @if(in_array($user->plan, ['personal', 'profesional']) && $user->status === 'active')
+                                {{-- Ubah Plan --}}
+                                <button type="button"
+                                    class="btn btn-sm btn-secondary"
+                                    onclick="openPlanModal({{ $user->id }}, '{{ $user->name }}', '{{ $user->plan }}')">
+                                    ✏️ Ubah Plan
+                                </button>
+
+                                {{-- Reset Password — semua user kecuali yang suspended --}}
+                                @if($user->status !== 'suspended')
                                     <form method="POST" action="{{ route('admin.user.reset-password', $user->id) }}"
                                           onsubmit="return confirm('Reset password {{ $user->name }}? Password baru akan dikirim via email.')">
                                         @csrf
@@ -169,6 +183,80 @@
     </div>
 
 </main>
+
+{{-- Modal Ubah Plan --}}
+<div class="modal-backdrop" id="planModal">
+    <div class="modal">
+        <h3>✏️ Ubah Plan User</h3>
+        <p id="planModalDesc" style="color:var(--gray-2);font-size:0.875rem;margin-bottom:1rem;"></p>
+        <form method="POST" id="planModalForm">
+            @csrf
+            @method('PATCH')
+            <div class="filter-group" style="margin-bottom:1rem;">
+                <label>Plan Baru</label>
+                <select name="plan" id="planModalSelect" style="width:100%;padding:0.5rem;border-radius:8px;border:1px solid var(--border);">
+                    <option value="starter">⚪ Starter</option>
+                    <option value="personal">🔵 Personal</option>
+                    <option value="profesional">🟣 Profesional</option>
+                </select>
+            </div>
+            <div class="filter-group" style="margin-bottom:1.5rem;">
+                <label>Berlaku Sampai <span style="color:var(--gray);font-size:0.8rem;">(kosongkan untuk Starter)</span></label>
+                <input type="date" name="plan_expires_at" id="planModalExpiry"
+                    style="width:100%;padding:0.5rem;border-radius:8px;border:1px solid var(--border);"
+                    min="{{ now()->addDay()->format('Y-m-d') }}">
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn btn-ghost" onclick="closePlanModal()">Batal</button>
+                <button type="submit" class="btn btn-primary">💾 Simpan</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function openPlanModal(userId, userName, currentPlan) {
+    document.getElementById('planModalDesc').textContent = 'User: ' + userName;
+    document.getElementById('planModalSelect').value = currentPlan;
+    document.getElementById('planModalForm').action = '/admin/users/' + userId + '/change-plan';
+
+    // Set default expiry +1 bulan jika bukan starter
+    const expiry = document.getElementById('planModalExpiry');
+    if (currentPlan !== 'starter') {
+        const d = new Date();
+        d.setMonth(d.getMonth() + 1);
+        expiry.value = d.toISOString().split('T')[0];
+    } else {
+        expiry.value = '';
+    }
+
+    document.getElementById('planModal').classList.add('show');
+}
+
+function closePlanModal() {
+    document.getElementById('planModal').classList.remove('show');
+}
+
+// Kosongkan expiry otomatis saat pilih Starter
+document.getElementById('planModalSelect').addEventListener('change', function () {
+    const expiry = document.getElementById('planModalExpiry');
+    if (this.value === 'starter') {
+        expiry.value = '';
+        expiry.disabled = true;
+    } else {
+        expiry.disabled = false;
+        if (!expiry.value) {
+            const d = new Date();
+            d.setMonth(d.getMonth() + 1);
+            expiry.value = d.toISOString().split('T')[0];
+        }
+    }
+});
+
+document.getElementById('planModal').addEventListener('click', function (e) {
+    if (e.target === this) closePlanModal();
+});
+</script>
 
 </body>
 </html>

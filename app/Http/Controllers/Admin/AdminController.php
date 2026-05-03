@@ -167,6 +167,27 @@ class AdminController extends Controller
         return back()->with('success', "Akun {$user->name} berhasil diaktifkan kembali.");
     }
 
+    // Ubah plan user secara manual
+    public function changePlan(Request $request, User $user)
+    {
+        $request->validate([
+            'plan'            => ['required', 'in:starter,personal,profesional'],
+            'plan_expires_at' => ['nullable', 'date', 'after:today'],
+        ]);
+
+        if ($user->is_admin) {
+            return back()->with('error', 'Tidak bisa mengubah plan akun admin.');
+        }
+
+        $user->update([
+            'plan'            => $request->plan,
+            'plan_expires_at' => $request->plan === 'starter' ? null : $request->plan_expires_at,
+            'status'          => 'active',
+        ]);
+
+        return back()->with('success', "Plan {$user->name} berhasil diubah ke " . ucfirst($request->plan) . ".");
+    }
+
     // Reset password user
     public function resetPassword(User $user)
     {

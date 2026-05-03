@@ -116,7 +116,7 @@
                         </td>
                         <td>
                             <span class="badge-plan {{ $payment->plan }}">
-                                {{ $payment->plan === 'personal' ? '🔵' : '🟣' }}
+                                {{ $payment->plan === 'admin' ? '🔵' : '🟣' }}
                                 {{ $payment->planLabel() }}
                             </span>
                         </td>
