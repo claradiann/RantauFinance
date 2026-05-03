@@ -101,4 +101,50 @@ class FinanceService
             ->whereYear('tanggal', $year)
             ->count();
     }
+
+    // ----- LAPORAN PER BULAN (ringkasan 12 bulan dalam setahun) -----
+    public function laporanTahunan($userId, $year)
+    {
+        $data = [];
+
+        for ($m = 1; $m <= 12; $m++) {
+            $pemasukan   = $this->sumByType($userId, 'pemasukan', $m, $year);
+            $pengeluaran = $this->sumByType($userId, 'pengeluaran', $m, $year);
+
+            $data[] = [
+                'bulan'       => $m,
+                'label'       => Carbon::create($year, $m, 1)->translatedFormat('F'),
+                'pemasukan'   => $pemasukan,
+                'pengeluaran' => $pengeluaran,
+                'selisih'     => $pemasukan - $pengeluaran,
+            ];
+        }
+
+        return $data;
+    }
+
+    // PEMASUKAN PER KATEGORI
+    public function pemasukanPerKategori($userId, $month, $year)
+    {
+        return Transaksi::where('transaksi.user_id', $userId)
+        ->whereMonth('transaksi.tanggal', $month)
+        ->whereYear('transaksi.tanggal', $year)
+        ->join('kategori', 'transaksi.kategori_id', '=', 'kategori.id')
+        ->where('kategori.tipe', 'pemasukan')
+        ->select('kategori.nama', DB::raw('SUM(transaksi.jumlah) as total'))
+        ->groupBy('kategori.nama')
+        ->orderByDesc('total')
+        ->get();
+    }
+
+    // SEMUA TRANSAKSI BULAN INI (untuk tabel detail)
+    public function transaksiPerBulan($userId, $month, $year)
+    {
+        return Transaksi::with('kategori')
+        ->where('user_id', $userId)
+        ->whereMonth('tanggal', $month)
+        ->whereYear('tanggal', $year)
+        ->orderBy('tanggal', 'desc')
+        ->get();
+    }
 }

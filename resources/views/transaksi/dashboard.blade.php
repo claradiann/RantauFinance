@@ -43,10 +43,10 @@
             </div>
             <div class="nav-section">
                 <div class="nav-section-title">Lainnya</div>
-                <a href="#" class="nav-item">
+                <a href="/kategori" class="nav-item">
                     <span class="nav-icon">📁</span> Kategori
                 </a>
-                <a href="#" class="nav-item">
+                <a href="/budget" class="nav-item">
                     <span class="nav-icon">🎯</span> Budget
                 </a>
                 <a href="#" class="nav-item">
@@ -62,7 +62,8 @@
                 </div>
                 <div class="user-info">
                     <div class="name">{{ auth()->user()->name }}</div>
-                    <div class="role">Personal</div>
+                    <div class="role">Starter
+                    </div>
                 </div>
             </div>
             <form method="POST" action="/logout">
@@ -76,6 +77,25 @@
 
     {{-- ===== MAIN ===== --}}
     <main class="main-content">
+        {{-- Flash Message --}}
+        @if(session('success'))
+            <div style="
+                margin: 1rem 1.5rem 0;
+                padding: 1rem 1.25rem;
+                border-radius: 10px;
+                background: #d1fae5;
+                border: 1px solid rgba(16,185,129,0.3);
+                color: #065f46;
+                font-size: 0.875rem;
+                font-weight: 500;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            ">  
+                ✅ {{ session('success') }}
+            </div>
+        @endif
+
         {{-- Top Bar --}}
         <div class="top-bar">
             <div class="top-bar-left">
@@ -99,7 +119,7 @@
                     <div class="stat-icon saldo">💰</div>
                 </div>
                 <div class="stat-value">Rp {{ number_format($saldo, 0, ',', '.') }}</div>
-                <div class="stat-label">Saldo Total</div>
+                <div class="stat-label">Saldo Tersedia</div>
             </div>
             <div class="stat-card income">
                 <div class="stat-header">
@@ -251,11 +271,11 @@
                             <div class="qa-icon">📋</div>
                             <span>Semua Transaksi</span>
                         </a>
-                        <a href="#" class="quick-action">
+                        <a href="/laporan" class="quick-action">
                             <div class="qa-icon">📊</div>
                             <span>Laporan</span>
                         </a>
-                        <a href="#" class="quick-action">
+                        <a href="/profile" class="quick-action">
                             <div class="qa-icon">⚙️</div>
                             <span>Pengaturan</span>
                         </a>

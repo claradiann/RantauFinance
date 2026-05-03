@@ -14,7 +14,7 @@
             border: 1px solid var(--border);
             border-radius: var(--radius);
             overflow: hidden;
-            max-width: 640px;
+            max-width: 100%;
         }
         .form-card-header {
             padding: 1.5rem 2rem;
@@ -247,15 +247,17 @@
                 </a>
             </div>
             <div class="nav-section">
-                <div class="nav-section-title">Lainnya</div>
-                <a href="#" class="nav-item">
+                <a href="/kategori" class="nav-item">
                     <span class="nav-icon">📁</span> Kategori
                 </a>
-                <a href="#" class="nav-item">
+                <a href="/budget" class="nav-item">
                     <span class="nav-icon">🎯</span> Budget
                 </a>
-                <a href="#" class="nav-item">
+                <a href="/laporan" class="nav-item">
                     <span class="nav-icon">📈</span> Laporan
+                </a>
+                <a href="/profile" class="nav-item">
+                    <span class="nav-icon">⚙️</span> Pengaturan
                 </a>
             </div>
         </nav>
@@ -308,38 +310,29 @@
             </div>
 
             <div class="form-card-body">
-                <form action="/transaksi/store" method="POST" id="transactionForm">
+                <form action="/transaksi" method="POST" id="transactionForm">
                     @csrf
+
+                    {{-- Tipe Transaksi --}}
+                    <div class="form-group">
+                        <label class="form-label">Tipe Transaksi</label>
+                        <div class="type-pills">
+                            <button type="button" class="type-pill active-income" id="pill-pemasukan" onclick="filterKategori('pemasukan')">
+                                📈 Pemasukan
+                            </button>
+                            <button type="button" class="type-pill" id="pill-pengeluaran" onclick="filterKategori('pengeluaran')">
+                                📉 Pengeluaran
+                            </button>
+                        </div>
+                    </div>
 
                     {{-- Kategori --}}
                     <div class="form-group">
-                        <label class="form-label">
-                            Kategori <span class="required">*</span>
+                        <label class="form-label" id="labelKategori">
+                            Jenis Pemasukan <span class="required">*</span>
                         </label>
-                        <select name="kategori_id" class="form-select {{ $errors->has('kategori_id') ? 'error' : '' }}" required>
-                            <option value="" disabled selected>Pilih kategori...</option>
-                            @php
-                                $pemasukanKategori = $kategori->where('tipe', 'pemasukan');
-                                $pengeluaranKategori = $kategori->where('tipe', 'pengeluaran');
-                            @endphp
-                            @if($pemasukanKategori->count() > 0)
-                                <optgroup label="📈 Pemasukan">
-                                    @foreach($pemasukanKategori as $k)
-                                        <option value="{{ $k->id }}" {{ old('kategori_id') == $k->id ? 'selected' : '' }}>
-                                            {{ $k->nama }}
-                                        </option>
-                                    @endforeach
-                                </optgroup>
-                            @endif
-                            @if($pengeluaranKategori->count() > 0)
-                                <optgroup label="📉 Pengeluaran">
-                                    @foreach($pengeluaranKategori as $k)
-                                        <option value="{{ $k->id }}" {{ old('kategori_id') == $k->id ? 'selected' : '' }}>
-                                            {{ $k->nama }}
-                                        </option>
-                                    @endforeach
-                                </optgroup>
-                            @endif
+                        <select name="kategori_id" id="selectKategori" class="form-select {{ $errors->has('kategori_id') ? 'error' : '' }}" required>
+                            <option value="" disabled selected>Pilih jenis...</option>
                         </select>
                         @error('kategori_id')
                             <p class="form-error">{{ $message }}</p>
@@ -396,22 +389,56 @@
 </div>
 
 <script>
+// Data kategori dari Laravel
+const kategoriData = {
+    pemasukan: [
+        @foreach($kategori->where('tipe', 'pemasukan') as $k)
+        { id: {{ $k->id }}, nama: {!! json_encode($k->nama) !!} },
+        @endforeach
+    ],
+    pengeluaran: [
+        @foreach($kategori->where('tipe', 'pengeluaran') as $k)
+        { id: {{ $k->id }}, nama: {!! json_encode($k->nama) !!} },
+        @endforeach
+    ]
+};
+
+function filterKategori(tipe) {
+    // Update pill aktif
+    document.getElementById('pill-pemasukan').className =
+        'type-pill' + (tipe === 'pemasukan' ? ' active-income' : '');
+    document.getElementById('pill-pengeluaran').className =
+        'type-pill' + (tipe === 'pengeluaran' ? ' active-expense' : '');
+
+    // Rebuild dropdown sesuai tipe
+    const select = document.getElementById('selectKategori');
+    select.innerHTML = '<option value="" disabled selected>Pilih kategori...</option>';
+    kategoriData[tipe].forEach(k => {
+        const opt = document.createElement('option');
+        opt.value = k.id;
+        opt.textContent = k.nama;
+        select.appendChild(opt);
+    });
+}
+
 function toggleSidebar() {
     document.getElementById('sidebar').classList.toggle('open');
     document.getElementById('sidebarOverlay').classList.toggle('open');
 }
 
-// Animate card on load
 document.addEventListener('DOMContentLoaded', () => {
+    filterKategori('pemasukan');
+
+    // Animate card
     const card = document.querySelector('.form-card');
     if (card) {
         card.style.opacity = '0';
         card.style.transform = 'translateY(20px)';
         card.style.transition = 'all 0.5s ease';
         requestAnimationFrame(() => {
-            card.style.opacity = '1';
-            card.style.transform = 'translateY(0)';
-        });
+        card.style.opacity = '1';
+        card.style.transform = 'translateY(0)';
+            });
     }
 });
 </script>

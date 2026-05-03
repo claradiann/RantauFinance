@@ -58,6 +58,6 @@ class TransaksiController extends Controller
             'keterangan' => $request->keterangan,
         ]);
 
-        return redirect('/transaksi')->with('success', 'Transaksi berhasil ditambahkan!');
+        return redirect('/dashboard')->with('success', 'Transaksi berhasil ditambahkan!');
     }
 }

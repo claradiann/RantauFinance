@@ -210,14 +210,17 @@
             </div>
             <div class="nav-section">
                 <div class="nav-section-title">Lainnya</div>
-                <a href="#" class="nav-item">
+                <a href="/kategori" class="nav-item">
                     <span class="nav-icon">📁</span> Kategori
                 </a>
-                <a href="#" class="nav-item">
+                <a href="/budget" class="nav-item">
                     <span class="nav-icon">🎯</span> Budget
                 </a>
-                <a href="#" class="nav-item">
+                <a href="/laporan" class="nav-item">
                     <span class="nav-icon">📈</span> Laporan
+                </a>
+                <a href="/profile" class="nav-item">
+                    <span class="nav-icon">⚙️</span> Pengaturan
                 </a>
             </div>
         </nav>

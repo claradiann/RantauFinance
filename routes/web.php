@@ -6,6 +6,9 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\TransaksiController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\BudgetController;
+use App\Http\Controllers\KategoriController;
+ use App\Http\Controllers\LaporanController;
 
 /*
 |--------------------------------------------------------------------------
@@ -53,6 +56,19 @@ Route::middleware(['auth', 'plan.active'])->group(function () {
     Route::post('/transaksi',       [TransaksiController::class, 'store'])
     ->middleware('transaksi.limit')
     ->name('transaksi.store');
+
+    // Budget
+    Route::get('/budget',          [BudgetController::class, 'index'])  ->name('budget.index');
+    Route::post('/budget',         [BudgetController::class, 'store'])  ->name('budget.store');
+    Route::delete('/budget/{id}',  [BudgetController::class, 'destroy'])->name('budget.destroy');
+
+    // Kategori
+    Route::get('/kategori',         [KategoriController::class, 'index'])  ->name('kategori.index');
+    Route::post('/kategori',        [KategoriController::class, 'store'])  ->name('kategori.store');
+    Route::delete('/kategori/{id}', [KategoriController::class, 'destroy'])->name('kategori.destroy');
+
+    // Laporan
+    Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan.index');
 });
 
 /*
@@ -64,6 +80,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile',    [ProfileController::class, 'edit'])   ->name('profile.edit');
     Route::patch('/profile',  [ProfileController::class, 'update']) ->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::put('/password', [ProfileController::class, 'updatePassword'])->name('password.update');
 });
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
