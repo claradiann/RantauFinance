@@ -238,12 +238,13 @@
             <div class="pricing-header">
                 <h3>Starter</h3>
                 <div class="price">Gratis<span></span></div>
-                <p class="price-note">Selamanya gratis</p>
+                <p class="price-note">Mulai sadar kemana uangmu pergi</p>
             </div>
             <ul class="pricing-features" style="flex: 1;">
                 <li><span class="check">✓</span> Input transaksi (maks 30/bulan)</li>
                 <li><span class="check">✓</span> Kategori dasar</li>
-                <li><span class="check">✓</span> Laporan bulanan simpel</li>
+                <li><span class="check">✓</span> Laporan bulanan sederhana</li>
+                <li><span class="check">✓</span> Total pemasukan & pengeluaran</li>
             </ul>
             <button class="btn-pricing" onclick="window.location='/register'">Mulai Gratis</button>
         </div>
@@ -254,12 +255,12 @@
             <div class="pricing-header">
                 <h3>Personal</h3>
                 <div class="price">Rp 29K<span>/bulan</span></div>
-                <p class="price-note">Cocok untuk pengelolaan pribadi</p>
+                <p class="price-note">Atur pengeluaran biar tetap stabil</p>
             </div>
             <ul class="pricing-features" style="flex: 1;">
-                <li><span class="check">✓</span> Semua fitur Free</li>
-                <li><span class="check">✓</span> Dashboard & grafik lengkap</li>
-                <li><span class="check">✓</span> Filter & cari transaksi</li>
+                <li><span class="check">✓</span> Transaksi unlimited</li>
+                <li><span class="check">✓</span> Dashboard grafik basic</li>
+                <li><span class="check">✓</span> Riwayat & Filter transaksi</li>
                 <li><span class="check">✓</span> Laporan bulanan detail</li>
                 <li><span class="check">✓</span> Budget planner</li>
             </ul>
@@ -270,18 +271,15 @@
         <div class="pricing-card" style="display: flex; flex-direction: column;">
             <div class="pricing-header">
                 <h3>Professional</h3>
-                <div class="price">Rp 35K<span>/bulan</span></div>
-                <p class="price-note">Fitur lengkap untuk kontrol penuh</p>
+                <div class="price">Rp 49K<span>/bulan</span></div>
+                <p class="price-note">Kontrol penuh + insight pintar</p>
             </div>
             <ul class="pricing-features" style="flex: 1;">
                 <li><span class="check">✓</span> Semua fitur Personal</li>
-                <li><span class="check">✓</span> Laporan bulanan & tahunan</li>
-                <li><span class="check">✓</span> Analisis per kategori</li>
-                <li><span class="check">✓</span> Export CSV & PDF</li>
-                <li><span class="check">✓</span> Peringatan budget</li>
-                <li><span class="check">✓</span> Riwayat transaksi penuh</li>
+                <li><span class="check">✓</span> Insight & Analisis cerdas</li>
+                <li><span class="check">✓</span> Peringatan budget hampir habis</li>
+                <li><span class="check">✓</span> Export data (CSV & PDF)</li>
                 <li><span class="check">✓</span> Kategori custom unlimited</li>
-                <li><span class="check">✓</span> Prioritas akses fitur baru</li>
             </ul>
             <button class="btn-pricing" onclick="window.location='/register'">Pilih Professional</button>
         </div>
@@ -393,7 +391,7 @@
                 <span class="arrow">▼</span>
             </button>
             <div class="faq-answer">
-                Ya! Paket Starter kami sepenuhnya gratis selamanya. Kamu bisa mencatat hingga 50 transaksi per bulan, membuat 5 kategori custom, dan mengakses dashboard dasar tanpa biaya apapun.
+                Ya! Paket Starter kami sepenuhnya gratis selamanya. Kamu bisa mencatat hingga 30 transaksi per bulan, mengakses laporan sederhana, dan mencatat total pemasukan tanpa biaya apapun.
             </div>
         </div>
         <div class="faq-item">
@@ -429,7 +427,7 @@
                 <span class="arrow">▼</span>
             </button>
             <div class="faq-answer">
-                Ya, semua paket mendukung export CSV. Untuk paket Professional ke atas, kamu juga bisa export ke format PDF dengan template laporan yang profesional.
+                Fitur export data (CSV & PDF) hanya tersedia pada paket Professional, bersamaan dengan analisis insight otomatis dan laporan kategori detail.
             </div>
         </div>
     </div>

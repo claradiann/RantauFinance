@@ -132,25 +132,31 @@
                 Password akun RantauFinance kamu baru saja direset oleh admin.
                 Berikut password baru kamu — simpan baik-baik ya!
             </p>
+
+            {{-- Password Box --}}
+            <div class="password-box">
+                <div class="label">Password Baru Kamu</div>
+                <div class="password">{{ $plainPassword }}</div>
+                <div class="note">Salin password ini sebelum login</div>
+            </div>
+
+            {{-- Warning --}}
+            <div class="warning-box">
+                ⚠️ <strong>Penting:</strong> Segera ganti password setelah login pertama.
+                Jangan bagikan password ini kepada siapapun.
+            </div>
         @else
             <p>
                 Pembayaran untuk paket <strong>{{ $user->planLabel() }}</strong> sudah kami verifikasi dan
-                akun kamu sekarang sudah aktif. Berikut password untuk masuk ke RantauFinance:
+                akun kamu sekarang sudah aktif.
             </p>
+
+            <div class="password-box" style="background: #f0fdf4; border-color: #bbf7d0;">
+                <div class="label" style="color: #166534;">Status Akun</div>
+                <div class="password" style="font-size: 1.5rem; color: #15803d; letter-spacing: 1px; font-family: inherit;">✅ AKTIF</div>
+                <div class="note" style="color: #166534;">Gunakan password yang kamu buat saat mendaftar</div>
+            </div>
         @endif
-
-        {{-- Password Box --}}
-        <div class="password-box">
-            <div class="label">Password Kamu</div>
-            <div class="password">{{ $plainPassword }}</div>
-            <div class="note">Salin password ini sebelum login</div>
-        </div>
-
-        {{-- Warning --}}
-        <div class="warning-box">
-            ⚠️ <strong>Penting:</strong> Segera ganti password setelah login pertama.
-            Jangan bagikan password ini kepada siapapun.
-        </div>
 
         {{-- Info Akun --}}
         <div class="info-card">
@@ -158,10 +164,12 @@
                 <span class="key">Email Login</span>
                 <span class="val">{{ $user->email }}</span>
             </div>
+            @if(isset($is_reset) && $is_reset)
             <div class="info-row">
-                <span class="key">Password</span>
+                <span class="key">Password Baru</span>
                 <span class="val" style="color:#6366f1;">{{ $plainPassword }}</span>
             </div>
+            @endif
             <div class="info-row">
                 <span class="key">Paket</span>
                 <span class="val">{{ $user->planLabel() }}</span>

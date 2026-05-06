@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
+use Illuminate\Support\Facades\URL;
 use Illuminate\View\View;
 
 class RegisteredUserController extends Controller
@@ -36,29 +37,31 @@ class RegisteredUserController extends Controller
 
         $plan = $request->plan;
 
-        // Starter langsung aktif, paket berbayar butuh payment dulu
-        $status = $plan === 'starter' ? 'active' : 'pending';
+        // Starter langsung aktif & simpan ke DB
+        if ($plan === 'starter') {
+            $user = User::create([
+                'name'     => $request->name,
+                'email'    => $request->email,
+                'password' => Hash::make($request->password),
+                'plan'     => 'starter',
+                'status'   => 'active',
+            ]);
 
-        // Untuk starter, password dari form sendiri
-        // Untuk berbayar, password akan dikirim via email setelah konfirmasi payment
-        $user = User::create([
+            event(new Registered($user));
+            Auth::login($user);
+
+            return redirect()->route('dashboard');
+        }
+
+        // Untuk Personal/Profesional: Simpan data di Session (belum masuk DB)
+        session(['pending_registration' => [
             'name'     => $request->name,
             'email'    => $request->email,
             'password' => Hash::make($request->password),
             'plan'     => $plan,
-            'status'   => $status,
-        ]);
+        ]]);
 
-        event(new Registered($user));
-
-        // Kalau starter → langsung login ke dashboard
-        if ($plan === 'starter') {
-            Auth::login($user);
-            return redirect()->route('dashboard');
-        }
-
-        // Kalau personal/profesional → ke halaman payment (belum login dulu)
-        return redirect()->route('payment.show', ['user' => $user->id])
-            ->with('info', 'Akun berhasil dibuat! Selesaikan pembayaran untuk mengaktifkan paket ' . ucfirst($plan) . '.');
+        return redirect()->route('payment.show')
+            ->with('info', 'Selesaikan pembayaran untuk mengaktifkan paket ' . ucfirst($plan) . '.');
     }
 }

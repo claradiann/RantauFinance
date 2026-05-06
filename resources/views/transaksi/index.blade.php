@@ -189,60 +189,7 @@
 
 <div class="app-layout">
     {{-- ===== SIDEBAR ===== --}}
-    <aside class="sidebar" id="sidebar">
-        <a href="/" class="sidebar-logo">
-            <div class="logo-icon">💰</div>
-            <span class="logo-text">RantauFinance</span>
-        </a>
-
-        <nav class="sidebar-nav">
-            <div class="nav-section">
-                <div class="nav-section-title">Menu</div>
-                <a href="/dashboard" class="nav-item">
-                    <span class="nav-icon">📊</span> Dashboard
-                </a>
-                <a href="/transaksi" class="nav-item active">
-                    <span class="nav-icon">💳</span> Transaksi
-                </a>
-                <a href="/transaksi/create" class="nav-item">
-                    <span class="nav-icon">➕</span> Tambah Transaksi
-                </a>
-            </div>
-            <div class="nav-section">
-                <div class="nav-section-title">Lainnya</div>
-                <a href="/kategori" class="nav-item">
-                    <span class="nav-icon">📁</span> Kategori
-                </a>
-                <a href="/budget" class="nav-item">
-                    <span class="nav-icon">🎯</span> Budget
-                </a>
-                <a href="/laporan" class="nav-item">
-                    <span class="nav-icon">📈</span> Laporan
-                </a>
-                <a href="/profile" class="nav-item">
-                    <span class="nav-icon">⚙️</span> Pengaturan
-                </a>
-            </div>
-        </nav>
-
-        <div class="sidebar-footer">
-            <div class="user-card">
-                <div class="user-avatar">
-                    {{ strtoupper(substr(auth()->user()->name, 0, 2)) }}
-                </div>
-                <div class="user-info">
-                    <div class="name">{{ auth()->user()->name }}</div>
-                    <div class="role">{{ ucfirst(auth()->user()->plan ?? 'Starter') }}</div>
-                </div>
-            </div>
-            <form method="POST" action="/logout">
-                @csrf
-                <button type="submit" class="logout-btn">
-                    <span>🚪</span> Keluar
-                </button>
-            </form>
-        </div>
-    </aside>
+    @include('partials.sidebar', ['active' => 'transaksi'])
 
     {{-- ===== MAIN ===== --}}
     <main class="main-content">
@@ -252,7 +199,8 @@
                 <h1>Transaksi</h1>
                 <p>Riwayat semua transaksi pemasukan dan pengeluaranmu</p>
             </div>
-            <div class="top-bar-right">
+            <div class="top-bar-right" style="display:flex;align-items:center;gap:1rem;">
+                @include('partials.notifications')
                 <a href="/transaksi/create" class="btn-add">
                     <span>+</span> Transaksi Baru
                 </a>
@@ -290,11 +238,55 @@
             </div>
         </div>
 
+        {{-- Filter Bar (Personal & Profesional) --}}
+        @if(auth()->user()->canAccess('filter_cari_transaksi'))
+        <form class="filter-bar" method="GET" action="/transaksi">
+            <div class="filter-group">
+                <label>Cari</label>
+                <input type="text" name="search" placeholder="Cari keterangan..." value="{{ request('search') }}">
+            </div>
+            <div class="filter-group">
+                <label>Tipe</label>
+                <select name="tipe">
+                    <option value="">Semua Tipe</option>
+                    <option value="pemasukan" {{ request('tipe') == 'pemasukan' ? 'selected' : '' }}>Pemasukan</option>
+                    <option value="pengeluaran" {{ request('tipe') == 'pengeluaran' ? 'selected' : '' }}>Pengeluaran</option>
+                </select>
+            </div>
+            <button type="submit" class="btn-filter">Filter</button>
+            @if(request()->anyFilled(['search', 'tipe']))
+                <a href="/transaksi" class="btn-reset">Reset</a>
+            @endif
+        </form>
+        @else
+        <div style="padding: 1rem; background: var(--light); border: 1px dashed var(--border); border-radius: var(--radius); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 1rem;">
+            <div style="font-size: 1.5rem;">🔒</div>
+            <div>
+                <div style="font-weight: 600; font-size: 0.9rem;">Fitur Pencarian & Filter Terkunci</div>
+                <div style="color: var(--gray); font-size: 0.8rem;">Upgrade ke paket Personal untuk memfilter transaksi.</div>
+            </div>
+            <a href="/payment/upgrade/personal" class="btn-primary" style="margin-left: auto; padding: 0.4rem 0.8rem; font-size: 0.8rem; text-decoration: none; border-radius: 6px;">Upgrade</a>
+        </div>
+        @endif
+
         {{-- Transaction Table --}}
         <div class="card">
-            <div class="card-header">
-                <h3>📋 Semua Transaksi</h3>
-                <span style="font-size:0.82rem;color:var(--gray);">{{ $transaksi->count() }} transaksi</span>
+            <div class="card-header" style="display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                    <h3>📋 Semua Transaksi</h3>
+                    <span style="font-size:0.82rem;color:var(--gray);">{{ $transaksi->count() }} transaksi</span>
+                </div>
+                
+                @if(auth()->user()->canAccess('export_csv_pdf'))
+                <div style="display:flex; gap:0.5rem;">
+                    <a href="{{ route('transaksi.export.csv') }}" title="Unduh CSV" style="padding: 0.4rem 0.8rem; font-size: 0.75rem; background: #fff; color: #374151; border-radius: 6px; text-decoration: none; font-weight: 600; border: 1px solid #d1d5db; display: flex; align-items: center; gap: 0.4rem;">
+                        <span>📄</span> CSV
+                    </a>
+                    <a href="{{ route('transaksi.export.pdf') }}" title="Unduh PDF" style="padding: 0.4rem 0.8rem; font-size: 0.75rem; background: #fff; color: #374151; border-radius: 6px; text-decoration: none; font-weight: 600; border: 1px solid #d1d5db; display: flex; align-items: center; gap: 0.4rem;">
+                        <span>📕</span> PDF
+                    </a>
+                </div>
+                @endif
             </div>
             <div class="card-body" style="padding:0;">
                 @if($transaksi->count() > 0)
@@ -305,6 +297,7 @@
                                 <th>Tipe</th>
                                 <th>Jumlah</th>
                                 <th>Tanggal</th>
+                                <th style="text-align: right;">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -324,15 +317,14 @@
                                     </div>
                                 </td>
                                 <td>
-                                    <span style="
-                                        padding: 3px 10px;
-                                        border-radius: 20px;
-                                        font-size: 0.72rem;
-                                        font-weight: 700;
-                                        {{ $t->kategori->tipe === 'pemasukan'
-                                            ? 'background: var(--success-bg); color: var(--success);'
-                                            : 'background: var(--danger-bg); color: var(--danger);' }}
-                                    ">
+                                    <span @style([
+                                        'padding: 3px 10px',
+                                        'border-radius: 20px',
+                                        'font-size: 0.72rem',
+                                        'font-weight: 700',
+                                        'background: var(--success-bg); color: var(--success)' => $t->kategori->tipe === 'pemasukan',
+                                        'background: var(--danger-bg); color: var(--danger)' => $t->kategori->tipe !== 'pemasukan',
+                                    ])>
                                         {{ ucfirst($t->kategori->tipe) }}
                                     </span>
                                 </td>
@@ -343,6 +335,16 @@
                                 </td>
                                 <td class="date-cell">
                                     {{ \Carbon\Carbon::parse($t->tanggal)->translatedFormat('d M Y') }}
+                                </td>
+                                <td style="text-align: right;">
+                                    <div style="display: flex; gap: 0.5rem; justify-content: flex-end; align-items: center;">
+                                        <a href="{{ route('transaksi.edit', $t->id) }}" style="color: var(--primary); text-decoration: none; font-size: 1.1rem;" title="Edit">✏️</a>
+                                        <form action="{{ route('transaksi.destroy', $t->id) }}" method="POST" onsubmit="return confirm('Hapus transaksi ini?')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" style="background: none; border: none; cursor: pointer; font-size: 1.1rem; padding: 0;" title="Hapus">🗑️</button>
+                                        </form>
+                                    </div>
                                 </td>
                             </tr>
                             @endforeach

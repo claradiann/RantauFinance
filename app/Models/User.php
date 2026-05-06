@@ -86,37 +86,36 @@ class User extends Authenticatable
             'input_transaksi',        // maks 30/bulan
             'kategori_dasar',
             'laporan_bulanan_simpel',
-            'riwayat_transaksi',
-            'export_csv_pdf',
+            'riwayat_transaksi',      // total pemasukan & pengeluaran
         ],
         'personal' => [
             'input_transaksi',        // unlimited
             'kategori_dasar',
             'laporan_bulanan_simpel',
             'riwayat_transaksi',
-            'export_csv_pdf',
-            'dashboard_grafik',
+            'dashboard_grafik_basic',
             'filter_cari_transaksi',
             'laporan_bulanan_detail',
             'budget_planner',
-            'notif_inapp',
+            'peringatan_budget',
         ],
         'profesional' => [
             'input_transaksi',
             'kategori_dasar',
             'laporan_bulanan_simpel',
             'riwayat_transaksi',
-            'export_csv_pdf',
-            'dashboard_grafik',
+            'dashboard_grafik_basic',
             'filter_cari_transaksi',
             'laporan_bulanan_detail',
             'budget_planner',
-            'notif_inapp',
-            'laporan_tahunan',
-            'analisis_per_kategori',
-            'kategori_custom',
-            'notif_email',
-            'notif_telegram',
+            'insight_otomatis',
+            'analisis_kebiasaan',
+            'perbandingan_bulanan',
+            'notifikasi_pintar',
+            'peringatan_budget',
+            'export_csv_pdf',
+            'analisis_kategori_detail',
+            'kategori_custom_unlimited',
         ],
     ];
 
@@ -171,12 +170,12 @@ class User extends Authenticatable
     // RELATIONSHIPS
     // =========================================================
 
-    public function transaksi()
+    public function transaksi(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(\App\Models\Transaksi::class);
     }
 
-    public function payments()
+    public function payments(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(\App\Models\Payment::class);
     }

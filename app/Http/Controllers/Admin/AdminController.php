@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\Payment;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
@@ -50,46 +52,43 @@ class AdminController extends Controller
         return view('admin.payment-detail', compact('payment'));
     }
 
-    // Konfirmasi pembayaran → aktifkan akun + generate password + kirim email
+    // Konfirmasi pembayaran → aktifkan akun + kirim email
     public function confirm(Payment $payment)
     {
         if (! $payment->isPending()) {
             return back()->with('error', 'Pembayaran ini sudah diproses sebelumnya.');
         }
 
-        $plainPassword = strtoupper(Str::random(4)) . rand(100, 999) . Str::random(1);
-        $user          = $payment->user;
+        $user = $payment->user;
 
         $user->update([
             'status'          => 'active',
             'plan'            => $payment->plan,
             'plan_expires_at' => Carbon::now()->addMonth(),
-            'password'        => Hash::make($plainPassword),
         ]);
 
         $payment->update([
             'status'       => 'confirmed',
-            'confirmed_by' => auth()->id(),
+            'confirmed_by' => Auth::id(),
             'confirmed_at' => now(),
         ]);
 
         try {
-            Mail::send('emails.payment-confirmed', [
+            Mail::send('email.payment-confirmed', [
                 'user'          => $user,
-                'plainPassword' => $plainPassword,
                 'payment'       => $payment,
             ], function ($message) use ($user) {
                 $message->to($user->email, $user->name)
-                    ->subject('🎉 Pembayaran Dikonfirmasi — Password RantauFinance Kamu');
+                    ->subject('🎉 Akun RantauFinance Kamu Sudah Aktif!');
             });
         } catch (\Exception $e) {
-            \Log::error('Gagal kirim email: ' . $e->getMessage());
+            Log::error('Gagal kirim email: ' . $e->getMessage());
             return redirect()->route('admin.index')
-                ->with('warning', "Dikonfirmasi, tapi email gagal. Password: <strong>{$plainPassword}</strong> — sampaikan manual ke user.");
+                ->with('warning', "Akun dikonfirmasi, tapi email gagal terkirim.");
         }
 
         return redirect()->route('admin.index')
-            ->with('success', "Pembayaran #{$payment->id} ({$user->name}) dikonfirmasi. Password dikirim ke {$user->email}.");
+            ->with('success', "Pembayaran #{$payment->id} ({$user->name}) dikonfirmasi. Akun sekarang aktif.");
     }
 
     // Tolak pembayaran
@@ -108,7 +107,7 @@ class AdminController extends Controller
         $payment->update([
             'status'        => 'rejected',
             'catatan_admin' => $catatan,
-            'confirmed_by'  => auth()->id(),
+            'confirmed_by'  => Auth::id(),
             'confirmed_at'  => now(),
         ]);
 
@@ -118,7 +117,7 @@ class AdminController extends Controller
         }
 
         try {
-            Mail::send('emails.payment-rejected', [
+            Mail::send('email.payment-rejected', [
                 'user'    => $user,
                 'payment' => $payment,
                 'catatan' => $catatan,
@@ -127,7 +126,7 @@ class AdminController extends Controller
                     ->subject('❌ Pembayaran RantauFinance Tidak Dapat Diproses');
             });
         } catch (\Exception $e) {
-            \Log::error('Gagal kirim email tolak: ' . $e->getMessage());
+            Log::error('Gagal kirim email tolak: ' . $e->getMessage());
         }
 
         return redirect()->route('admin.index')
@@ -195,7 +194,7 @@ class AdminController extends Controller
         $user->update(['password' => Hash::make($plainPassword)]);
 
         try {
-            Mail::send('emails.payment-confirmed', [
+            Mail::send('email.payment-confirmed', [
                 'user'          => $user,
                 'plainPassword' => $plainPassword,
                 'payment'       => $user->payments()->latest()->first(),

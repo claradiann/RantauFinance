@@ -18,63 +18,7 @@
 <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
 
 <div class="app-layout">
-    {{-- ===== SIDEBAR ===== --}}
-    <aside class="sidebar" id="sidebar">
-        <a href="/" class="sidebar-logo">
-            <div class="logo-icon">💰</div>
-            <span class="logo-text">RantauFinance</span>
-        </a>
-
-        <nav class="sidebar-nav">
-            <div class="nav-section">
-                <div class="nav-section-title">Menu</div>
-                <a href="/dashboard" class="nav-item active">
-                    <span class="nav-icon">📊</span> Dashboard
-                </a>
-                <a href="/transaksi" class="nav-item">
-                    <span class="nav-icon">💳</span> Transaksi
-                    @if($totalTransaksi > 0)
-                        <span class="nav-badge">{{ $totalTransaksi }}</span>
-                    @endif
-                </a>
-                <a href="/transaksi/create" class="nav-item">
-                    <span class="nav-icon">➕</span> Tambah Transaksi
-                </a>
-            </div>
-            <div class="nav-section">
-                <div class="nav-section-title">Lainnya</div>
-                <a href="/kategori" class="nav-item">
-                    <span class="nav-icon">📁</span> Kategori
-                </a>
-                <a href="/budget" class="nav-item">
-                    <span class="nav-icon">🎯</span> Budget
-                </a>
-                <a href="#" class="nav-item">
-                    <span class="nav-icon">📈</span> Laporan
-                </a>
-            </div>
-        </nav>
-
-        <div class="sidebar-footer">
-            <div class="user-card">
-                <div class="user-avatar">
-                    {{ strtoupper(substr(auth()->user()->name, 0, 2)) }}
-                </div>
-                <div class="user-info">
-                    <div class="name">{{ auth()->user()->name }}</div>
-                    <div class="role">
-                        {{ auth()->user()->is_admin ? '⚙️ Administrator' : auth()->user()->planLabel() }}
-                    </div>
-                </div>
-            </div>
-            <form method="POST" action="/logout">
-                @csrf
-                <button type="submit" class="logout-btn">
-                    <span>🚪</span> Keluar
-                </button>
-            </form>
-        </div>
-    </aside>
+    @include('partials.sidebar', ['active' => 'dashboard'])
 
     {{-- ===== MAIN ===== --}}
     <main class="main-content">
@@ -97,6 +41,40 @@
             </div>
         @endif
 
+        {{-- Upgrade Required Notification --}}
+        @if(session('upgrade_required'))
+            @php $ur = session('upgrade_required'); @endphp
+            <div style="
+                margin: 1rem 1.5rem 0;
+                padding: 1.15rem 1.5rem;
+                border-radius: 12px;
+                background: linear-gradient(135deg, #fef3c7, #fefce8);
+                border: 1px solid rgba(245,158,11,0.3);
+                color: #92400e;
+                font-size: 0.875rem;
+                font-weight: 500;
+                display: flex;
+                align-items: center;
+                gap: 0.75rem;
+            ">
+                <span style="font-size:1.3rem;">🔒</span>
+                <div style="flex:1;">
+                    <strong>{{ $ur['message'] }}</strong>
+                    <div style="font-size:0.78rem;opacity:0.85;margin-top:2px;">Paket saat ini: {{ $ur['current'] }}</div>
+                </div>
+                <a href="/profile" style="
+                    padding: 0.45rem 1rem;
+                    background: linear-gradient(135deg, #f59e0b, #d97706);
+                    color: white;
+                    border-radius: 8px;
+                    font-size: 0.78rem;
+                    font-weight: 700;
+                    text-decoration: none;
+                    white-space: nowrap;
+                ">Upgrade Sekarang</a>
+            </div>
+        @endif
+
         {{-- Top Bar --}}
         <div class="top-bar">
             <div class="top-bar-left">
@@ -104,14 +82,25 @@
                 <p>Selamat datang kembali, {{ auth()->user()->name }}! 👋</p>
             </div>
             <div class="top-bar-right">
-                <button class="btn-icon" title="Notifikasi">
-                    🔔 <span class="notif-dot"></span>
-                </button>
+                @include('partials.notifications')
                 <a href="/transaksi/create" class="btn-add">
                     <span>+</span> Transaksi Baru
                 </a>
             </div>
         </div>
+
+        @php
+            $pendingPayment = auth()->user()->payments()->where('status', 'pending')->latest()->first();
+        @endphp
+        @if($pendingPayment)
+            <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 12px; padding: 1rem 1.5rem; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem;">
+                <div>
+                    <strong style="color: #1e40af; display: block; margin-bottom: 0.25rem;">⏳ Pembayaran sedang diproses</strong>
+                    <span style="color: #3b82f6; font-size: 0.85rem;">Admin sedang memverifikasi pembayaran kamu untuk paket <strong>{{ ucfirst($pendingPayment->plan) }}</strong>. Sambil menunggu, kamu bisa menggunakan paket Starter secara gratis.</span>
+                </div>
+                <a href="{{ URL::signedRoute('payment.status', ['user' => auth()->id()]) }}" style="background: white; border: 1px solid #bfdbfe; padding: 0.5rem 1rem; border-radius: 8px; color: #1d4ed8; font-size: 0.8rem; font-weight: 600; text-decoration: none; white-space: nowrap;">Cek Status</a>
+            </div>
+        @endif
 
         {{-- Stat Cards --}}
         <div class="stats-row">
@@ -156,36 +145,49 @@
                     <a href="#" class="card-action">Lihat Detail →</a>
                 </div>
                 <div class="card-body">
-                    <div class="chart-container">
-                        @php
-                            $maxVal = max(1, collect($chartData)->flatMap(fn($d) => [$d['pemasukan'], $d['pengeluaran']])->max());
-                        @endphp
-                        <div class="chart-bars">
-                            @foreach($chartData as $data)
-                                <div class="chart-group">
-                                    <div class="chart-bar-pair">
-                                        <div class="chart-bar income-bar"
-                                             style="height: {{ ($data['pemasukan'] / $maxVal) * 170 }}px;">
-                                            <div class="tooltip">Rp {{ number_format($data['pemasukan'], 0, ',', '.') }}</div>
+                    @if(auth()->user()->canAccess('dashboard_grafik_basic'))
+                        <div class="chart-container">
+                            @php
+                                $maxVal = max(1, collect($chartData)->flatMap(fn($d) => [$d['pemasukan'], $d['pengeluaran']])->max());
+                            @endphp
+                            <div class="chart-bars">
+                                @foreach($chartData as $data)
+                                    <div class="chart-group">
+                                        <div class="chart-bar-pair">
+                                            <div class="chart-bar income-bar"
+                                                 @style(['height: ' . (($data['pemasukan'] / $maxVal) * 170) . 'px'])>
+                                                <div class="tooltip">Rp {{ number_format($data['pemasukan'], 0, ',', '.') }}</div>
+                                            </div>
+                                            <div class="chart-bar expense-bar"
+                                                 @style(['height: ' . (($data['pengeluaran'] / $maxVal) * 170) . 'px'])>
+                                                <div class="tooltip">Rp {{ number_format($data['pengeluaran'], 0, ',', '.') }}</div>
+                                            </div>
                                         </div>
-                                        <div class="chart-bar expense-bar"
-                                             style="height: {{ ($data['pengeluaran'] / $maxVal) * 170 }}px;">
-                                            <div class="tooltip">Rp {{ number_format($data['pengeluaran'], 0, ',', '.') }}</div>
-                                        </div>
+                                        <span class="chart-label">{{ $data['label'] }}</span>
                                     </div>
-                                    <span class="chart-label">{{ $data['label'] }}</span>
+                                @endforeach
+                            </div>
+                            <div class="chart-legend">
+                                <div class="chart-legend-item">
+                                    <div class="chart-legend-dot income"></div> Pemasukan
                                 </div>
-                            @endforeach
-                        </div>
-                        <div class="chart-legend">
-                            <div class="chart-legend-item">
-                                <div class="chart-legend-dot income"></div> Pemasukan
-                            </div>
-                            <div class="chart-legend-item">
-                                <div class="chart-legend-dot expense"></div> Pengeluaran
+                                <div class="chart-legend-item">
+                                    <div class="chart-legend-dot expense"></div> Pengeluaran
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    @else
+                        <div style="padding: 3rem 1rem; text-align: center; background: var(--light); border-radius: var(--radius); border: 1px dashed var(--border);">
+                            <div style="font-size: 2.5rem; margin-bottom: 0.75rem;">🔒</div>
+                            <h4 style="margin-bottom: 0.5rem; color: var(--dark);">Grafik Analisis Terkunci</h4>
+                            <p style="color: var(--gray); font-size: 0.9rem; margin-bottom: 1.5rem; max-width: 300px; margin-left: auto; margin-right: auto;">
+                                Fitur grafik keuangan 6 bulan terakhir hanya tersedia mulai dari paket Personal.
+                            </p>
+                            <a href="/payment/upgrade/personal" style="display: inline-block; padding: 0.6rem 1.25rem; background: var(--primary); color: white; border-radius: 8px; font-weight: 600; text-decoration: none; font-size: 0.85rem;">
+                                Upgrade Sekarang
+                            </a>
+                        </div>
+                    @endif
                 </div>
             </div>
 
@@ -205,7 +207,7 @@
                                     <div class="cat-info">
                                         <div class="cat-name">{{ $cat->nama }}</div>
                                         <div class="cat-progress-bar">
-                                            <div class="cat-progress-fill" style="width: {{ ($cat->total / $maxCat) * 100 }}%"></div>
+                                            <div class="cat-progress-fill" @style(['width: ' . (($cat->total / $maxCat) * 100) . '%'])></div>
                                         </div>
                                     </div>
                                     <div class="cat-amount">Rp {{ number_format($cat->total, 0, ',', '.') }}</div>
@@ -272,10 +274,17 @@
                             <div class="qa-icon">📋</div>
                             <span>Semua Transaksi</span>
                         </a>
-                        <a href="/laporan" class="quick-action">
-                            <div class="qa-icon">📊</div>
-                            <span>Laporan</span>
-                        </a>
+                        @if(auth()->user()->canAccess('laporan_bulanan_detail'))
+                            <a href="/laporan" class="quick-action">
+                                <div class="qa-icon">📊</div>
+                                <span>Laporan</span>
+                            </a>
+                        @else
+                            <div class="quick-action" style="opacity:0.4;cursor:not-allowed;" onclick="showUpgradeToast('Laporan', 'Personal')">
+                                <div class="qa-icon">🔒</div>
+                                <span>Laporan</span>
+                            </div>
+                        @endif
                         <a href="/profile" class="quick-action">
                             <div class="qa-icon">⚙️</div>
                             <span>Pengaturan</span>
