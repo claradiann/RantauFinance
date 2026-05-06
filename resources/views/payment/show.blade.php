@@ -384,7 +384,7 @@
                     ⏳ Bukti pembayaran kamu sudah kami terima dan sedang dalam proses verifikasi.
                     Password akan dikirim ke <strong>{{ $user->email }}</strong> setelah dikonfirmasi (maks 1×24 jam).
                     <br><br>
-                    <a href="{{ route('payment.status', $user->id) }}">Pantau status →</a>
+                    <a href="{{ URL::signedRoute('payment.status', ['user' => $user->id]) }}">Pantau status →</a>
                 </div>
             @else
 
@@ -401,7 +401,7 @@
             </div>
 
             {{-- Form Upload --}}
-            <form method="POST" action="{{ route('payment.upload', $user->id) }}" enctype="multipart/form-data" id="paymentForm">
+            <form method="POST" action="{{ route('payment.upload') }}" enctype="multipart/form-data" id="paymentForm">
                 @csrf
 
                 {{-- Pilih Metode --}}
@@ -495,7 +495,11 @@
             @endif {{-- end if existingPayment --}}
 
             <div class="auth-footer">
-                <a href="/">← Kembali ke Beranda</a>
+                @if(Auth::check())
+                    <a href="/dashboard">← Kembali ke Dashboard</a>
+                @else
+                    <a href="/">← Kembali ke Beranda</a>
+                @endif
             </div>
         </div>
     </div>

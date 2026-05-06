@@ -154,46 +154,26 @@
 <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
 
 <div class="app-layout">
-    <aside class="sidebar" id="sidebar">
-        <a href="/" class="sidebar-logo">
-            <div class="logo-icon">💰</div>
-            <span class="logo-text">RantauFinance</span>
-        </a>
-        <nav class="sidebar-nav">
-            <div class="nav-section">
-                <div class="nav-section-title">Menu</div>
-                <a href="/dashboard" class="nav-item"><span class="nav-icon">📊</span> Dashboard</a>
-                <a href="/transaksi" class="nav-item"><span class="nav-icon">💳</span> Transaksi</a>
-                <a href="/transaksi/create" class="nav-item"><span class="nav-icon">➕</span> Tambah Transaksi</a>
-            </div>
-            <div class="nav-section">
-                <div class="nav-section-title">Lainnya</div>
-                <a href="/kategori" class="nav-item"><span class="nav-icon">📁</span> Kategori</a>
-                <a href="/budget" class="nav-item"><span class="nav-icon">🎯</span> Budget</a>
-                <a href="/laporan" class="nav-item active"><span class="nav-icon">📈</span> Laporan</a>
-                <a href="/profile" class="nav-item"><span class="nav-icon">⚙️</span> Pengaturan</a>
-            </div>
-        </nav>
-        <div class="sidebar-footer">
-            <div class="user-card">
-                <div class="user-avatar">{{ strtoupper(substr(auth()->user()->name, 0, 2)) }}</div>
-                <div class="user-info">
-                    <div class="name">{{ auth()->user()->name }}</div>
-                    <div class="role">{{ ucfirst(auth()->user()->plan ?? 'Starter') }}</div>
-                </div>
-            </div>
-            <form method="POST" action="/logout">
-                @csrf
-                <button type="submit" class="logout-btn"><span>🚪</span> Keluar</button>
-            </form>
-        </div>
-    </aside>
+    @include('partials.sidebar', ['active' => 'laporan'])
 
     <main class="main-content">
         <div class="top-bar">
             <div class="top-bar-left">
                 <h1>📈 Laporan Keuangan</h1>
                 <p>Ringkasan pemasukan & pengeluaran kamu</p>
+            </div>
+            <div class="top-bar-right" style="display:flex;align-items:center;gap:1rem;">
+                @if(auth()->user()->canAccess('export_csv_pdf'))
+                <div style="display:flex; gap:0.5rem;">
+                    <a href="{{ route('transaksi.export.csv') }}" title="Unduh CSV" style="padding: 0.45rem 0.9rem; font-size: 0.78rem; background: #fff; color: #374151; border-radius: 8px; text-decoration: none; font-weight: 700; border: 1px solid #d1d5db; display: flex; align-items: center; gap: 0.4rem; transition: all 0.2s;">
+                        <span style="font-size: 1rem;">📄</span> CSV
+                    </a>
+                    <a href="{{ route('transaksi.export.pdf') }}" title="Unduh PDF" style="padding: 0.45rem 0.9rem; font-size: 0.78rem; background: #fff; color: #374151; border-radius: 8px; text-decoration: none; font-weight: 700; border: 1px solid #d1d5db; display: flex; align-items: center; gap: 0.4rem; transition: all 0.2s;">
+                        <span style="font-size: 1rem;">📕</span> PDF
+                    </a>
+                </div>
+                @endif
+                @include('partials.notifications')
             </div>
         </div>
 
@@ -251,8 +231,20 @@
                     @foreach($laporanTahunan as $d)
                     <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;position:relative;">
                         <div style="display:flex;align-items:flex-end;gap:2px;justify-content:center;width:100%;">
-                            <div style="width:45%;height:{{ ($d['pemasukan']/$maxVal)*110 }}px;background:#10b981;border-radius:3px 3px 0 0;min-height:{{ $d['pemasukan']>0?2:0 }}px;"></div>
-                            <div style="width:45%;height:{{ ($d['pengeluaran']/$maxVal)*110 }}px;background:#ef4444;border-radius:3px 3px 0 0;min-height:{{ $d['pengeluaran']>0?2:0 }}px;"></div>
+                            <div @style([
+                                'width: 45%',
+                                'height: ' . (($d['pemasukan']/$maxVal)*110) . 'px',
+                                'background: #10b981',
+                                'border-radius: 3px 3px 0 0',
+                                'min-height: ' . ($d['pemasukan'] > 0 ? 2 : 0) . 'px'
+                            ])></div>
+                            <div @style([
+                                'width: 45%',
+                                'height: ' . (($d['pengeluaran']/$maxVal)*110) . 'px',
+                                'background: #ef4444',
+                                'border-radius: 3px 3px 0 0',
+                                'min-height: ' . ($d['pengeluaran'] > 0 ? 2 : 0) . 'px'
+                            ])></div>
                         </div>
                         <span style="font-size:0.62rem;color:var(--gray);margin-top:4px;">{{ $d['label'] }}</span>
                     </div>
@@ -274,7 +266,7 @@
                             <span style="min-width:80px;font-weight:600;">{{ $k->nama }}</span>
                             <div class="kat-bar-wrap">
                                 <div class="kat-bar">
-                                    <div class="kat-bar-fill income" style="width:{{ ($k->total/$maxInc)*100 }}%"></div>
+                                    <div class="kat-bar-fill income" @style(['width: ' . ($k->total/$maxInc)*100 . '%'])></div>
                                 </div>
                             </div>
                             <span style="font-weight:700;color:#10b981;white-space:nowrap;">Rp {{ number_format($k->total, 0, ',', '.') }}</span>
@@ -297,7 +289,7 @@
                             <span style="min-width:80px;font-weight:600;">{{ $k->nama }}</span>
                             <div class="kat-bar-wrap">
                                 <div class="kat-bar">
-                                    <div class="kat-bar-fill expense" style="width:{{ ($k->total/$maxExp)*100 }}%"></div>
+                                    <div class="kat-bar-fill expense" @style(['width: ' . ($k->total/$maxExp)*100 . '%'])></div>
                                 </div>
                             </div>
                             <span style="font-weight:700;color:#ef4444;white-space:nowrap;">Rp {{ number_format($k->total, 0, ',', '.') }}</span>
@@ -341,7 +333,11 @@
                                 @endif
                             </td>
                             <td style="color:var(--gray);">{{ $tx->keterangan ?? '-' }}</td>
-                            <td style="text-align:right;font-weight:700;color:{{ $tx->kategori->tipe === 'pemasukan' ? '#10b981' : '#ef4444' }};">
+                            <td @style([
+                                'text-align: right',
+                                'font-weight: 700',
+                                'color: ' . ($tx->kategori->tipe === 'pemasukan' ? '#10b981' : '#ef4444')
+                            ])>
                                 {{ $tx->kategori->tipe === 'pemasukan' ? '+' : '-' }}Rp {{ number_format($tx->jumlah, 0, ',', '.') }}
                             </td>
                         </tr>

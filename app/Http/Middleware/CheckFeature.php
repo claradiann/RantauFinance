@@ -40,7 +40,11 @@ class CheckFeature
 
     private function suggestUpgrade(string $currentPlan, string $feature): string
     {
-        $profesionalOnly = ['laporan_tahunan', 'analisis_per_kategori', 'kategori_custom', 'notif_email', 'notif_telegram'];
+        $profesionalOnly = [
+            'insight_otomatis', 'analisis_kebiasaan', 'perbandingan_bulanan',
+            'notifikasi_pintar', 'peringatan_budget', 'export_csv_pdf',
+            'analisis_kategori_detail', 'kategori_custom_unlimited',
+        ];
 
         if (in_array($feature, $profesionalOnly)) {
             return 'profesional';

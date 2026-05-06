@@ -314,39 +314,7 @@
 <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
 
 <div class="app-layout">
-    <aside class="sidebar" id="sidebar">
-        <a href="/" class="sidebar-logo">
-            <div class="logo-icon">💰</div>
-            <span class="logo-text">RantauFinance</span>
-        </a>
-        <nav class="sidebar-nav">
-            <div class="nav-section">
-                <div class="nav-section-title">Menu</div>
-                <a href="/dashboard" class="nav-item"><span class="nav-icon">📊</span> Dashboard</a>
-                <a href="/transaksi" class="nav-item"><span class="nav-icon">💳</span> Transaksi</a>
-                <a href="/transaksi/create" class="nav-item"><span class="nav-icon">➕</span> Tambah Transaksi</a>
-            </div>
-            <div class="nav-section">
-                <div class="nav-section-title">Lainnya</div>
-                <a href="/kategori" class="nav-item"><span class="nav-icon">📁</span> Kategori</a>
-                <a href="/budget" class="nav-item"><span class="nav-icon">🎯</span> Budget</a>
-                <a href="/laporan" class="nav-item"><span class="nav-icon">📈</span> Laporan</a>
-            </div>
-        </nav>
-        <div class="sidebar-footer">
-            <div class="user-card">
-                <div class="user-avatar">{{ strtoupper(substr(auth()->user()->name, 0, 2)) }}</div>
-                <div class="user-info">
-                    <div class="name">{{ auth()->user()->name }}</div>
-                    <div class="role">{{ auth()->user()->planLabel() }}</div>
-                </div>
-            </div>
-            <form method="POST" action="/logout">
-                @csrf
-                <button type="submit" class="logout-btn"><span>🚪</span> Keluar</button>
-            </form>
-        </div>
-    </aside>
+    @include('partials.sidebar', ['active' => 'pengaturan'])
 
     <main class="main-content">
         <div class="top-bar">
@@ -468,10 +436,10 @@
                                     <div class="plan-name">Starter</div>
                                     <div class="plan-price">Gratis <span>/selamanya</span></div>
                                     <ul class="plan-features">
-                                        <li>30 transaksi/bulan</li>
+                                        <li>Input transaksi (maks 30/bln)</li>
                                         <li>Kategori dasar</li>
-                                        <li>Laporan sederhana</li>
-                                        <li>Riwayat transaksi</li>
+                                        <li>Laporan bulanan sederhana</li>
+                                        <li>Total in & out</li>
                                     </ul>
                                     <span class="btn-upgrade disabled">Plan Aktif</span>
                                 </div>
@@ -481,10 +449,9 @@
                                     <div class="plan-price">Rp 29.000 <span>/bulan</span></div>
                                     <ul class="plan-features">
                                         <li>Transaksi unlimited</li>
-                                        <li>Dashboard grafik</li>
-                                        <li>Budget planner</li>
-                                        <li>Laporan detail</li>
-                                        <li>Filter & pencarian</li>
+                                        <li>Dashboard grafik basic</li>
+                                        <li>Riwayat & Filter transaksi</li>
+                                        <li>Budget & Laporan detail</li>
                                     </ul>
                                     @if(auth()->user()->effectivePlan() === 'personal')
                                         <span class="btn-upgrade disabled">Plan Aktif</span>
@@ -495,13 +462,13 @@
                                 {{-- Profesional --}}
                                 <div class="plan-card {{ auth()->user()->effectivePlan() === 'profesional' ? 'current' : '' }}">
                                     <div class="plan-name">Profesional</div>
-                                    <div class="plan-price">Rp 59.000 <span>/bulan</span></div>
+                                    <div class="plan-price">Rp 49.000 <span>/bulan</span></div>
                                     <ul class="plan-features">
                                         <li>Semua fitur Personal</li>
-                                        <li>Laporan tahunan</li>
-                                        <li>Analisis per kategori</li>
-                                        <li>Kategori custom</li>
-                                        <li>Notifikasi email</li>
+                                        <li>Insight & Analisis cerdas</li>
+                                        <li>Peringatan budget</li>
+                                        <li>Export CSV & PDF</li>
+                                        <li>Kategori custom unlimited</li>
                                     </ul>
                                     @if(auth()->user()->effectivePlan() === 'profesional')
                                         <span class="btn-upgrade disabled">Plan Aktif</span>

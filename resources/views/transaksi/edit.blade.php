@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tambah Transaksi — Rantau Finance</title>
+    <title>Edit Transaksi — Rantau Finance</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
@@ -169,21 +169,6 @@
             color: var(--primary);
         }
 
-        /* Success alert */
-        .alert-success-custom {
-            padding: 1rem 1.25rem;
-            border-radius: var(--radius-sm);
-            background: var(--success-bg);
-            border: 1px solid rgba(16,185,129,0.2);
-            color: var(--success);
-            font-size: 0.85rem;
-            font-weight: 500;
-            margin-bottom: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
         /* Type selector pills */
         .type-pills {
             display: flex;
@@ -227,15 +212,14 @@
 <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
 
 <div class="app-layout">
-    @include('partials.sidebar', ['active' => 'create'])
+    @include('partials.sidebar', ['active' => 'transaksi'])
 
     {{-- ===== MAIN ===== --}}
     <main class="main-content">
-        {{-- Top Bar --}}
         <div class="top-bar">
             <div class="top-bar-left">
-                <h1>Tambah Transaksi</h1>
-                <p>Catat pemasukan atau pengeluaran baru</p>
+                <h1>Edit Transaksi</h1>
+                <p>Ubah detail transaksi kamu</p>
             </div>
             <div class="top-bar-right">
                 <a href="/transaksi" class="btn-add" style="background:var(--white);color:var(--dark-3);border:1px solid var(--border);box-shadow:none;">
@@ -244,31 +228,25 @@
             </div>
         </div>
 
-        @if(session('success'))
-            <div class="alert-success-custom">
-                ✅ {{ session('success') }}
-            </div>
-        @endif
-
-        {{-- Form Card --}}
         <div class="form-card">
             <div class="form-card-header">
-                <h2>📝 Detail Transaksi</h2>
-                <p>Isi informasi transaksi yang ingin dicatat</p>
+                <h2>📝 Edit Detail Transaksi</h2>
+                <p>Perbarui informasi transaksi yang sudah dicatat</p>
             </div>
 
             <div class="form-card-body">
-                <form action="/transaksi" method="POST" id="transactionForm">
+                <form action="{{ route('transaksi.update', $transaksi->id) }}" method="POST" id="transactionForm">
                     @csrf
+                    @method('PUT')
 
                     {{-- Tipe Transaksi --}}
                     <div class="form-group">
                         <label class="form-label">Tipe Transaksi</label>
                         <div class="type-pills">
-                            <button type="button" class="type-pill active-income" id="pill-pemasukan" onclick="filterKategori('pemasukan')">
+                            <button type="button" class="type-pill {{ $transaksi->kategori->tipe === 'pemasukan' ? 'active-income' : '' }}" id="pill-pemasukan" onclick="filterKategori('pemasukan')">
                                 📈 Pemasukan
                             </button>
-                            <button type="button" class="type-pill" id="pill-pengeluaran" onclick="filterKategori('pengeluaran')">
+                            <button type="button" class="type-pill {{ $transaksi->kategori->tipe === 'pengeluaran' ? 'active-expense' : '' }}" id="pill-pengeluaran" onclick="filterKategori('pengeluaran')">
                                 📉 Pengeluaran
                             </button>
                         </div>
@@ -276,11 +254,11 @@
 
                     {{-- Kategori --}}
                     <div class="form-group">
-                        <label class="form-label" id="labelKategori">
-                            Jenis Pemasukan <span class="required">*</span>
+                        <label class="form-label">
+                            Jenis Transaksi <span class="required">*</span>
                         </label>
                         <select name="kategori_id" id="selectKategori" class="form-select {{ $errors->has('kategori_id') ? 'error' : '' }}" required>
-                            <option value="" disabled selected>Pilih jenis...</option>
+                            <option value="" disabled>Pilih jenis...</option>
                         </select>
                         @error('kategori_id')
                             <p class="form-error">{{ $message }}</p>
@@ -296,7 +274,7 @@
                             <div class="amount-input-wrapper">
                                 <span class="prefix">Rp</span>
                                 <input type="number" name="jumlah" class="form-input {{ $errors->has('jumlah') ? 'error' : '' }}"
-                                       value="{{ old('jumlah') }}" placeholder="0" min="1" required>
+                                       value="{{ old('jumlah', $transaksi->jumlah) }}" placeholder="0" min="1" required>
                             </div>
                             @error('jumlah')
                                 <p class="form-error">{{ $message }}</p>
@@ -308,7 +286,7 @@
                                 Tanggal <span class="required">*</span>
                             </label>
                             <input type="date" name="tanggal" class="form-input {{ $errors->has('tanggal') ? 'error' : '' }}"
-                                   value="{{ old('tanggal', date('Y-m-d')) }}" required>
+                                   value="{{ old('tanggal', \Carbon\Carbon::parse($transaksi->tanggal)->format('Y-m-d')) }}" required>
                             @error('tanggal')
                                 <p class="form-error">{{ $message }}</p>
                             @enderror
@@ -319,7 +297,7 @@
                     <div class="form-group">
                         <label class="form-label">Keterangan</label>
                         <input type="text" name="keterangan" class="form-input"
-                               value="{{ old('keterangan') }}" placeholder="Contoh: Gaji bulan Mei, Belanja mingguan, dll...">
+                               value="{{ old('keterangan', $transaksi->keterangan) }}" placeholder="Contoh: Gaji bulan Mei, Belanja mingguan, dll...">
                         <p class="form-hint">Opsional — tambahkan catatan untuk referensi</p>
                     </div>
 
@@ -327,7 +305,7 @@
                     <div class="form-actions">
                         <a href="/transaksi" class="btn-cancel">Batal</a>
                         <button type="submit" class="btn-submit">
-                            💾 Simpan Transaksi
+                            💾 Perbarui Transaksi
                         </button>
                     </div>
                 </form>
@@ -340,6 +318,8 @@
 <div id="kategori-data-container" 
      data-pemasukan='@json($kategori->where("tipe", "pemasukan")->values())'
      data-pengeluaran='@json($kategori->where("tipe", "pengeluaran")->values())'
+     data-current-id="{{ $transaksi->kategori_id }}"
+     data-current-tipe="{{ $transaksi->kategori->tipe }}"
      style="display:none;"></div>
 
 <script>
@@ -350,20 +330,26 @@ const kategoriData = {
     pengeluaran: JSON.parse(kategoriContainer.dataset.pengeluaran)
 };
 
-function filterKategori(tipe) {
-    // Update pill aktif
+const currentKategoriId = kategoriContainer.dataset.currentId;
+const currentTipe = kategoriContainer.dataset.currentTipe;
+
+function filterKategori(tipe, selectedId = null) {
     document.getElementById('pill-pemasukan').className =
         'type-pill' + (tipe === 'pemasukan' ? ' active-income' : '');
     document.getElementById('pill-pengeluaran').className =
         'type-pill' + (tipe === 'pengeluaran' ? ' active-expense' : '');
 
-    // Rebuild dropdown sesuai tipe
     const select = document.getElementById('selectKategori');
-    select.innerHTML = '<option value="" disabled selected>Pilih kategori...</option>';
+    select.innerHTML = '<option value="" disabled>Pilih kategori...</option>';
     kategoriData[tipe].forEach(k => {
         const opt = document.createElement('option');
         opt.value = k.id;
         opt.textContent = k.nama;
+        if (selectedId && k.id == selectedId) {
+            opt.selected = true;
+        } else if (!selectedId && k.id == currentKategoriId && tipe === currentTipe) {
+            opt.selected = true;
+        }
         select.appendChild(opt);
     });
 }
@@ -374,18 +360,17 @@ function toggleSidebar() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    filterKategori('pemasukan');
+    filterKategori(currentTipe, currentKategoriId);
 
-    // Animate card
     const card = document.querySelector('.form-card');
     if (card) {
         card.style.opacity = '0';
         card.style.transform = 'translateY(20px)';
         card.style.transition = 'all 0.5s ease';
         requestAnimationFrame(() => {
-        card.style.opacity = '1';
-        card.style.transform = 'translateY(0)';
-            });
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+        });
     }
 });
 </script>

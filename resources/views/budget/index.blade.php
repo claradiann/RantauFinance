@@ -178,46 +178,16 @@
 <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
 
 <div class="app-layout">
-    <aside class="sidebar" id="sidebar">
-        <a href="/" class="sidebar-logo">
-            <div class="logo-icon">💰</div>
-            <span class="logo-text">RantauFinance</span>
-        </a>
-        <nav class="sidebar-nav">
-            <div class="nav-section">
-                <div class="nav-section-title">Menu</div>
-                <a href="/dashboard" class="nav-item"><span class="nav-icon">📊</span> Dashboard</a>
-                <a href="/transaksi" class="nav-item"><span class="nav-icon">💳</span> Transaksi</a>
-                <a href="/transaksi/create" class="nav-item"><span class="nav-icon">➕</span> Tambah Transaksi</a>
-            </div>
-            <div class="nav-section">
-                <div class="nav-section-title">Lainnya</div>
-                <a href="/kategori" class="nav-item"><span class="nav-icon">📁</span> Kategori</a>
-                <a href="/budget" class="nav-item active"><span class="nav-icon">🎯</span> Budget</a>
-                <a href="/laporan" class="nav-item"><span class="nav-icon">📈</span> Laporan</a>
-                <a href="/profile" class="nav-item"><span class="nav-icon">⚙️</span> Pengaturan</a>
-            </div>
-        </nav>
-        <div class="sidebar-footer">
-            <div class="user-card">
-                <div class="user-avatar">{{ strtoupper(substr(auth()->user()->name, 0, 2)) }}</div>
-                <div class="user-info">
-                    <div class="name">{{ auth()->user()->name }}</div>
-                    <div class="role">{{ ucfirst(auth()->user()->plan ?? 'Starter') }}</div>
-                </div>
-            </div>
-            <form method="POST" action="/logout">
-                @csrf
-                <button type="submit" class="logout-btn"><span>🚪</span> Keluar</button>
-            </form>
-        </div>
-    </aside>
+    @include('partials.sidebar', ['active' => 'budget'])
 
     <main class="main-content">
         <div class="top-bar">
             <div class="top-bar-left">
                 <h1>🎯 Budget</h1>
                 <p>Atur batas pengeluaran per kategori</p>
+            </div>
+            <div class="top-bar-right">
+                @include('partials.notifications')
             </div>
         </div>
 
@@ -271,7 +241,7 @@
                                     </div>
                                 </div>
                                 <div class="progress-bar">
-                                    <div class="progress-fill {{ $status }}" style="width: {{ $b->persen }}%"></div>
+                                    <div class="progress-fill {{ $status }}" @style(['width: ' . $b->persen . '%'])></div>
                                 </div>
                                 <div class="budget-meta">
                                     <span style="color:var(--gray);">Terpakai: <strong>Rp {{ number_format($b->terpakai, 0, ',', '.') }}</strong></span>

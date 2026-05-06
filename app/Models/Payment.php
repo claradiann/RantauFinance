@@ -95,7 +95,7 @@ class Payment extends Model
     {
         return match ($plan) {
             'personal'    => 29000,
-            'profesional' => 35000,
+            'profesional' => 49000,
             default       => 0,
         };
     }

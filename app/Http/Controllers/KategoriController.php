@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Kategori;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class KategoriController extends Controller
 {
@@ -17,6 +18,13 @@ class KategoriController extends Controller
 
     public function store(Request $request)
     {
+        /** @var \App\Models\User $user */
+        $user = $request->user();
+
+        if (! $user->canAccess('kategori_custom_unlimited')) {
+            return redirect()->route('kategori.index')->with('error', 'Fitur Kategori Custom hanya tersedia di paket Profesional.');
+        }
+
         $request->validate([
             'nama' => 'required|string|max:50|unique:kategori,nama',
             'tipe' => 'required|in:pemasukan,pengeluaran',
@@ -30,8 +38,15 @@ class KategoriController extends Controller
         return redirect('/kategori')->with('success', 'Kategori berhasil ditambahkan!');
     }
 
-    public function destroy($id)
+    public function destroy(int $id)
     {
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+
+        if (! $user->canAccess('kategori_custom_unlimited')) {
+            return redirect()->route('kategori.index')->with('error', 'Fitur Kategori Custom hanya tersedia di paket Profesional.');
+        }
+
         $kategori = Kategori::findOrFail($id);
 
         // Cegah hapus kalau masih ada transaksi

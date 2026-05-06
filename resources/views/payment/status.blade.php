@@ -241,7 +241,7 @@
                 <div class="status-desc">
                     Kamu belum mengupload bukti pembayaran.
                 </div>
-                <a href="{{ route('payment.show', $user->id) }}" class="btn-action">Upload Bukti Sekarang →</a>
+                <a href="{{ route('payment.show') }}" class="btn-action">Upload Bukti Sekarang →</a>
 
             @elseif($payment->isPending())
                 {{-- Pending --}}
@@ -283,6 +283,11 @@
 
                 <p style="font-size:0.85rem;color:var(--gray);margin-bottom:1.25rem;text-align:center;">
                     Password akan dikirim ke: <strong style="color:var(--dark-2);">{{ $user->email }}</strong>
+                </p>
+
+                <a href="/dashboard" class="btn-action">Lanjutkan ke Dashboard →</a>
+                <p style="font-size:0.75rem;color:var(--gray);text-align:center;margin-bottom:1.5rem;">
+                    Sambil menunggu, kamu bisa mulai menggunakan RantauFinance dengan akses <strong>Starter</strong> secara gratis.
                 </p>
 
                 <div class="refresh-note">
@@ -338,13 +343,17 @@
                     </div>
                 @endif
 
-                <a href="{{ route('payment.show', $user->id) }}" class="btn-action">Upload Ulang →</a>
+                <a href="{{ route('payment.show') }}" class="btn-action">Upload Ulang →</a>
                 <a href="mailto:admin@rantaufinance.com" class="btn-action-outline">Hubungi Admin</a>
 
             @endif
 
             <div class="auth-footer">
-                <a href="/">← Kembali ke Beranda</a>
+                @if(Auth::check())
+                    <a href="/dashboard">← Kembali ke Dashboard</a>
+                @else
+                    <a href="/">← Kembali ke Beranda</a>
+                @endif
             </div>
         </div>
     </div>

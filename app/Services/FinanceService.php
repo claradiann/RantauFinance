@@ -9,7 +9,7 @@ use Carbon\Carbon;
 class FinanceService
 {
     // SALDO
-    public function saldo($userId)
+    public function saldo(int $userId)
     {
         $pemasukan = $this->totalPemasukan($userId);
         $pengeluaran = $this->totalPengeluaran($userId);
@@ -17,14 +17,14 @@ class FinanceService
         return $pemasukan - $pengeluaran;
     }
 
-    public function totalPemasukan($userId)
+    public function totalPemasukan(int $userId)
     {
         return Transaksi::where('user_id', $userId)
             ->whereHas('kategori', fn($q) => $q->where('tipe', 'pemasukan'))
             ->sum('jumlah');
     }
 
-    public function totalPengeluaran($userId)
+    public function totalPengeluaran(int $userId)
     {
         return Transaksi::where('user_id', $userId)
             ->whereHas('kategori', fn($q) => $q->where('tipe', 'pengeluaran'))
@@ -32,17 +32,17 @@ class FinanceService
     }
 
     // BULAN INI
-    public function pemasukanBulanIni($userId, $month, $year)
+    public function pemasukanBulanIni(int $userId, int $month, int $year)
     {
         return $this->sumByType($userId, 'pemasukan', $month, $year);
     }
 
-    public function pengeluaranBulanIni($userId, $month, $year)
+    public function pengeluaranBulanIni(int $userId, int $month, int $year)
     {
         return $this->sumByType($userId, 'pengeluaran', $month, $year);
     }
 
-    private function sumByType($userId, $type, $month, $year)
+    private function sumByType(int $userId, string $type, int $month, int $year)
     {
         return Transaksi::where('user_id', $userId)
             ->whereMonth('tanggal', $month)
@@ -52,7 +52,7 @@ class FinanceService
     }
 
     // TRANSAKSI TERBARU
-    public function transaksiTerbaru($userId)
+    public function transaksiTerbaru(int $userId)
     {
         return Transaksi::with('kategori')
             ->where('user_id', $userId)
@@ -62,7 +62,7 @@ class FinanceService
     }
 
     // PER KATEGORI
-    public function pengeluaranPerKategori($userId, $month, $year)
+    public function pengeluaranPerKategori(int $userId, int $month, int $year)
     {
         return Transaksi::where('transaksi.user_id', $userId)
             ->whereMonth('transaksi.tanggal', $month)
@@ -75,18 +75,36 @@ class FinanceService
             ->get();
     }
 
-    // CHART 6 BULAN
-    public function chart6Bulan($userId)
+    // CHART 6 BULAN (Optimized: 1 Query)
+    public function chart6Bulan(int $userId)
     {
-        $data = [];
+        $startDate = Carbon::now()->subMonths(5)->startOfMonth();
 
+        $stats = Transaksi::where('transaksi.user_id', $userId)
+            ->where('tanggal', '>=', $startDate)
+            ->join('kategori', 'transaksi.kategori_id', '=', 'kategori.id')
+            ->select(
+                DB::raw('MONTH(tanggal) as month'),
+                DB::raw('YEAR(tanggal) as year'),
+                'kategori.tipe',
+                DB::raw('SUM(jumlah) as total')
+            )
+            ->groupBy('year', 'month', 'kategori.tipe')
+            ->get();
+
+        $data = [];
         for ($i = 5; $i >= 0; $i--) {
             $date = Carbon::now()->subMonths($i);
+            $m = $date->month;
+            $y = $date->year;
+
+            $pemasukan = $stats->where('month', $m)->where('year', $y)->where('tipe', 'pemasukan')->first()->total ?? 0;
+            $pengeluaran = $stats->where('month', $m)->where('year', $y)->where('tipe', 'pengeluaran')->first()->total ?? 0;
 
             $data[] = [
                 'label' => $date->translatedFormat('M'),
-                'pemasukan' => $this->sumByType($userId, 'pemasukan', $date->month, $date->year),
-                'pengeluaran' => $this->sumByType($userId, 'pengeluaran', $date->month, $date->year),
+                'pemasukan' => (float) $pemasukan,
+                'pengeluaran' => (float) $pengeluaran,
             ];
         }
 
@@ -94,7 +112,7 @@ class FinanceService
     }
 
     // TOTAL TRANSAKSI
-    public function totalTransaksiBulanIni($userId, $month, $year)
+    public function totalTransaksiBulanIni(int $userId, int $month, int $year)
     {
         return Transaksi::where('user_id', $userId)
             ->whereMonth('tanggal', $month)
@@ -102,21 +120,31 @@ class FinanceService
             ->count();
     }
 
-    // ----- LAPORAN PER BULAN (ringkasan 12 bulan dalam setahun) -----
-    public function laporanTahunan($userId, $year)
+    // ----- LAPORAN PER BULAN (Optimized: 1 Query) -----
+    public function laporanTahunan(int $userId, int $year)
     {
-        $data = [];
+        $stats = Transaksi::where('transaksi.user_id', $userId)
+            ->whereYear('tanggal', $year)
+            ->join('kategori', 'transaksi.kategori_id', '=', 'kategori.id')
+            ->select(
+                DB::raw('MONTH(tanggal) as month'),
+                'kategori.tipe',
+                DB::raw('SUM(jumlah) as total')
+            )
+            ->groupBy('month', 'kategori.tipe')
+            ->get();
 
+        $data = [];
         for ($m = 1; $m <= 12; $m++) {
-            $pemasukan   = $this->sumByType($userId, 'pemasukan', $m, $year);
-            $pengeluaran = $this->sumByType($userId, 'pengeluaran', $m, $year);
+            $pemasukan   = $stats->where('month', $m)->where('tipe', 'pemasukan')->first()->total ?? 0;
+            $pengeluaran = $stats->where('month', $m)->where('tipe', 'pengeluaran')->first()->total ?? 0;
 
             $data[] = [
                 'bulan'       => $m,
                 'label'       => Carbon::create($year, $m, 1)->translatedFormat('F'),
-                'pemasukan'   => $pemasukan,
-                'pengeluaran' => $pengeluaran,
-                'selisih'     => $pemasukan - $pengeluaran,
+                'pemasukan'   => (float) $pemasukan,
+                'pengeluaran' => (float) $pengeluaran,
+                'selisih'     => (float) $pemasukan - $pengeluaran,
             ];
         }
 
@@ -124,7 +152,7 @@ class FinanceService
     }
 
     // PEMASUKAN PER KATEGORI
-    public function pemasukanPerKategori($userId, $month, $year)
+    public function pemasukanPerKategori(int $userId, int $month, int $year)
     {
         return Transaksi::where('transaksi.user_id', $userId)
         ->whereMonth('transaksi.tanggal', $month)
@@ -138,7 +166,7 @@ class FinanceService
     }
 
     // SEMUA TRANSAKSI BULAN INI (untuk tabel detail)
-    public function transaksiPerBulan($userId, $month, $year)
+    public function transaksiPerBulan(int $userId, int $month, int $year)
     {
         return Transaksi::with('kategori')
         ->where('user_id', $userId)
@@ -146,5 +174,54 @@ class FinanceService
         ->whereYear('tanggal', $year)
         ->orderBy('tanggal', 'desc')
         ->get();
+    }
+
+    // BUDGET WARNINGS (Hanya untuk Personal & Profesional)
+    public function budgetWarnings(int $userId)
+    {
+        $now = Carbon::now();
+        $month = $now->month;
+        $year = $now->year;
+
+        // Ambil semua budget user bulan ini
+        $budgets = \App\Models\Budget::with('kategori')
+            ->where('user_id', $userId)
+            ->where('bulan', $month)
+            ->where('tahun', $year)
+            ->get();
+
+        $warnings = [];
+
+        foreach ($budgets as $b) {
+            $terpakai = Transaksi::where('user_id', $userId)
+                ->where('kategori_id', $b->kategori_id)
+                ->whereMonth('tanggal', $month)
+                ->whereYear('tanggal', $year)
+                ->sum('jumlah');
+
+            $persen = $b->jumlah > 0 ? ($terpakai / $b->jumlah) * 100 : 0;
+
+            if ($persen >= 100) {
+                $warnings[] = [
+                    'id' => 'budget-over-' . $b->id,
+                    'type' => 'danger',
+                    'icon' => '🚨',
+                    'title' => 'Budget Terlampaui!',
+                    'message' => "Pengeluaran untuk <strong>{$b->kategori->nama}</strong> telah melebihi budget bulanan.",
+                    'time' => 'Sekarang'
+                ];
+            } elseif ($persen >= 80) {
+                $warnings[] = [
+                    'id' => 'budget-warn-' . $b->id,
+                    'type' => 'warning',
+                    'icon' => '⚠️',
+                    'title' => 'Budget Menipis',
+                    'message' => "Pengeluaran <strong>{$b->kategori->nama}</strong> sudah mencapai " . round($persen) . "% dari budget.",
+                    'time' => 'Sekarang'
+                ];
+            }
+        }
+
+        return $warnings;
     }
 }

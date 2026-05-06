@@ -288,8 +288,8 @@
                                 <ul class="plan-features">
                                     <li>Input transaksi (maks 30/bln)</li>
                                     <li>Kategori dasar</li>
-                                    <li>Laporan bulanan</li>
-                                    <li>Export CSV & PDF</li>
+                                    <li>Laporan bulanan sederhana</li>
+                                    <li>Total pemasukan & pengeluaran</li>
                                 </ul>
                             </div>
                         </label>
@@ -308,9 +308,9 @@
                                 <div class="plan-price">Rp 29.000/bulan</div>
                                 <ul class="plan-features">
                                     <li>Transaksi unlimited</li>
-                                    <li>Dashboard & grafik</li>
-                                    <li>Budget planner</li>
-                                    <li>Notifikasi in-app</li>
+                                    <li>Dashboard grafik basic</li>
+                                    <li>Riwayat & Filter transaksi</li>
+                                    <li>Budget & Laporan detail</li>
                                 </ul>
                             </div>
                         </label>
@@ -323,15 +323,15 @@
                             <div class="plan-radio"></div>
                             <div class="plan-info">
                                 <div class="plan-top-row">
-                                    <span class="plan-name">Profesional</span>
+                                    <span class="plan-name">Professional</span>
                                     <span class="plan-badge badge-purple">PRO</span>
                                 </div>
-                                <div class="plan-price">Rp 35.000/bulan</div>
+                                <div class="plan-price">Rp 49.000/bulan</div>
                                 <ul class="plan-features">
                                     <li>Semua fitur Personal</li>
-                                    <li>Laporan tahunan</li>
-                                    <li>Analisis per kategori</li>
-                                    <li>Notif email & Telegram</li>
+                                    <li>Insight & Analisis cerdas</li>
+                                    <li>Peringatan budget</li>
+                                    <li>Export CSV & PDF</li>
                                 </ul>
                             </div>
                         </label>

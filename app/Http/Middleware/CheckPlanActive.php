@@ -6,6 +6,8 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
+use Illuminate\Support\Facades\URL;
+
 class CheckPlanActive
 {
     /**
@@ -27,11 +29,11 @@ class CheckPlanActive
             $payment = $user->payments()->latest()->first();
 
             if ($payment) {
-                return redirect()->route('payment.status', $user->id)
+                return redirect()->to(URL::signedRoute('payment.status', ['user' => $user->id]))
                     ->with('info', 'Akun kamu masih menunggu konfirmasi pembayaran.');
             }
 
-            return redirect()->route('payment.show', $user->id)
+            return redirect()->route('payment.show')
                 ->with('info', 'Selesaikan pembayaran untuk mengaktifkan akun kamu.');
         }
 

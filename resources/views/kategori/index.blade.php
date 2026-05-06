@@ -184,46 +184,16 @@
 <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
 
 <div class="app-layout">
-    <aside class="sidebar" id="sidebar">
-        <a href="/" class="sidebar-logo">
-            <div class="logo-icon">💰</div>
-            <span class="logo-text">RantauFinance</span>
-        </a>
-        <nav class="sidebar-nav">
-            <div class="nav-section">
-                <div class="nav-section-title">Menu</div>
-                <a href="/dashboard" class="nav-item"><span class="nav-icon">📊</span> Dashboard</a>
-                <a href="/transaksi" class="nav-item"><span class="nav-icon">💳</span> Transaksi</a>
-                <a href="/transaksi/create" class="nav-item"><span class="nav-icon">➕</span> Tambah Transaksi</a>
-            </div>
-            <div class="nav-section">
-                <div class="nav-section-title">Lainnya</div>
-                <a href="/kategori" class="nav-item active"><span class="nav-icon">📁</span> Kategori</a>
-                <a href="/budget" class="nav-item"><span class="nav-icon">🎯</span> Budget</a>
-                <a href="/laporan" class="nav-item"><span class="nav-icon">📈</span> Laporan</a>
-                <a href="/profile" class="nav-item"><span class="nav-icon">⚙️</span> Pengaturan</a>
-            </div>
-        </nav>
-        <div class="sidebar-footer">
-            <div class="user-card">
-                <div class="user-avatar">{{ strtoupper(substr(auth()->user()->name, 0, 2)) }}</div>
-                <div class="user-info">
-                    <div class="name">{{ auth()->user()->name }}</div>
-                    <div class="role">{{ ucfirst(auth()->user()->plan ?? 'Starter') }}</div>
-                </div>
-            </div>
-            <form method="POST" action="/logout">
-                @csrf
-                <button type="submit" class="logout-btn"><span>🚪</span> Keluar</button>
-            </form>
-        </div>
-    </aside>
+    @include('partials.sidebar', ['active' => 'kategori'])
 
     <main class="main-content">
         <div class="top-bar">
             <div class="top-bar-left">
                 <h1>📁 Kategori</h1>
                 <p>Kelola kategori pemasukan dan pengeluaran</p>
+            </div>
+            <div class="top-bar-right">
+                @include('partials.notifications')
             </div>
         </div>
 
@@ -252,14 +222,16 @@
                                         <div class="kategori-count">{{ $k->transaksi->count() }} transaksi</div>
                                     </div>
                                 </div>
+                                @if(auth()->user()->canAccess('kategori_custom_unlimited'))
                                 <form method="POST" action="/kategori/{{ $k->id }}">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn-delete"
-                                        {{ $k->transaksi->count() > 0 ? 'disabled title=Tidak bisa dihapus, masih digunakan' : 'onclick=return confirm(Hapus kategori ini?)' }}>
+                                        {{ $k->transaksi->count() > 0 ? 'disabled title=Tidak bisa dihapus, masih digunakan' : 'onclick=return confirm(\'Hapus kategori ini?\')' }}>
                                         🗑
                                     </button>
                                 </form>
+                                @endif
                             </div>
                         @empty
                             <div class="empty-state">Belum ada kategori pemasukan</div>
@@ -280,14 +252,16 @@
                                         <div class="kategori-count">{{ $k->transaksi->count() }} transaksi</div>
                                     </div>
                                 </div>
+                                @if(auth()->user()->canAccess('kategori_custom_unlimited'))
                                 <form method="POST" action="/kategori/{{ $k->id }}">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn-delete"
-                                        {{ $k->transaksi->count() > 0 ? 'disabled title=Tidak bisa dihapus, masih digunakan' : 'onclick=return confirm(Hapus kategori ini?)' }}>
+                                        {{ $k->transaksi->count() > 0 ? 'disabled title=Tidak bisa dihapus, masih digunakan' : 'onclick=return confirm(\'Hapus kategori ini?\')' }}>
                                         🗑
                                     </button>
                                 </form>
+                                @endif
                             </div>
                         @empty
                             <div class="empty-state">Belum ada kategori pengeluaran</div>
@@ -298,33 +272,42 @@
 
             {{-- Form Tambah Kategori --}}
             <div class="form-card" style="align-self: start;">
-                <h3 style="font-size:1rem;font-weight:800;margin-bottom:1.25rem;">➕ Tambah Kategori Baru</h3>
-                <form method="POST" action="/kategori">
-                    @csrf
+                @if(auth()->user()->canAccess('kategori_custom_unlimited'))
+                    <h3 style="font-size:1rem;font-weight:800;margin-bottom:1.25rem;">➕ Tambah Kategori Baru</h3>
+                    <form method="POST" action="/kategori">
+                        @csrf
 
-                    <div class="form-group">
-                        <label class="form-label">Tipe</label>
-                        <div class="type-pills">
-                            <button type="button" class="type-pill active-income" id="pill-pemasukan"
-                                onclick="setTipe('pemasukan')">📈 Pemasukan</button>
-                            <button type="button" class="type-pill" id="pill-pengeluaran"
-                                onclick="setTipe('pengeluaran')">📉 Pengeluaran</button>
+                        <div class="form-group">
+                            <label class="form-label">Tipe</label>
+                            <div class="type-pills">
+                                <button type="button" class="type-pill active-income" id="pill-pemasukan"
+                                    onclick="setTipe('pemasukan')">📈 Pemasukan</button>
+                                <button type="button" class="type-pill" id="pill-pengeluaran"
+                                    onclick="setTipe('pengeluaran')">📉 Pengeluaran</button>
+                            </div>
+                            <input type="hidden" name="tipe" id="inputTipe" value="pemasukan">
                         </div>
-                        <input type="hidden" name="tipe" id="inputTipe" value="pemasukan">
-                    </div>
 
-                    <div class="form-group">
-                        <label class="form-label">Nama Kategori</label>
-                        <input type="text" name="nama" class="form-input"
-                               placeholder="Contoh: Bonus, Nongkrong, Olahraga..."
-                               value="{{ old('nama') }}" required maxlength="50">
-                        @error('nama')
-                            <p style="font-size:0.78rem;color:#ef4444;margin-top:0.3rem;">{{ $message }}</p>
-                        @enderror
-                    </div>
+                        <div class="form-group">
+                            <label class="form-label">Nama Kategori</label>
+                            <input type="text" name="nama" class="form-input"
+                                   placeholder="Contoh: Bonus, Nongkrong, Olahraga..."
+                                   value="{{ old('nama') }}" required maxlength="50">
+                            @error('nama')
+                                <p style="font-size:0.78rem;color:#ef4444;margin-top:0.3rem;">{{ $message }}</p>
+                            @enderror
+                        </div>
 
-                    <button type="submit" class="btn-submit">💾 Simpan Kategori</button>
-                </form>
+                        <button type="submit" class="btn-submit">💾 Simpan Kategori</button>
+                    </form>
+                @else
+                    <div style="text-align: center; padding: 2rem 0;">
+                        <div style="font-size: 2.5rem; margin-bottom: 0.75rem;">🔒</div>
+                        <h4 style="margin-bottom: 0.5rem; color: var(--dark);">Fitur Terkunci</h4>
+                        <p style="color: var(--gray); font-size: 0.9rem; margin-bottom: 1.5rem;">Pembuatan kategori custom unlimited hanya tersedia di paket Profesional.</p>
+                        <a href="/payment/upgrade/profesional" class="btn-submit" style="display:inline-block; text-align:center; text-decoration:none; box-sizing:border-box;">Upgrade ke Profesional</a>
+                    </div>
+                @endif
             </div>
         </div>
     </main>
