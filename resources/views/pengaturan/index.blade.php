@@ -331,16 +331,16 @@
         <div class="settings-grid">
             {{-- Nav Kiri --}}
             <div class="settings-nav">
-                <div class="settings-nav-item active" onclick="showPanel('profil')">
+                <div class="settings-nav-item active" onclick="showPanel('profil', this)">
                     👤 Edit Profil
                 </div>
-                <div class="settings-nav-item" onclick="showPanel('password')">
+                <div class="settings-nav-item" onclick="showPanel('password', this)">
                     🔒 Ganti Password
                 </div>
-                <div class="settings-nav-item" onclick="showPanel('upgrade')">
+                <div class="settings-nav-item" onclick="showPanel('upgrade', this)">
                     ⭐ Upgrade Plan
                 </div>
-                <div class="settings-nav-item" onclick="showPanel('akun')">
+                <div class="settings-nav-item" onclick="showPanel('akun', this)">
                     🗑 Hapus Akun
                 </div>
             </div>
@@ -531,11 +531,14 @@
 </div>
 
 <script>
-function showPanel(name) {
+function showPanel(name, el) {
     document.querySelectorAll('.settings-panel').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.settings-nav-item').forEach(n => n.classList.remove('active'));
     document.getElementById('panel-' + name).classList.add('active');
-    event.currentTarget.classList.add('active');
+    
+    // Aktifkan tab di nav
+    const target = el || (window.event ? window.event.currentTarget : null) || document.querySelector(`[onclick*="${name}"]`);
+    if (target && target.classList) target.classList.add('active');
 }
 
 function toggleSidebar() {
@@ -544,9 +547,10 @@ function toggleSidebar() {
 }
 
 // Buka panel password otomatis jika ada error password
-@if($errors->has('current_password') || $errors->has('password'))
+const hasPasswordErrors = "{{ $errors->has('current_password') || $errors->has('password') ? '1' : '' }}";
+if (hasPasswordErrors === '1') {
     document.addEventListener('DOMContentLoaded', () => showPanel('password'));
-@endif
+}
 </script>
 </body>
 </html>

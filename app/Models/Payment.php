@@ -58,7 +58,7 @@ class Payment extends Model
 
     public function nominalFormatted(): string
     {
-        return 'Rp ' . number_format($this->nominal, 0, ',', '.');
+        return 'Rp ' . number_format((float) $this->nominal, 0, ',', '.');
     }
 
     public function planLabel(): string
