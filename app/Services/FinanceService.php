@@ -177,13 +177,54 @@ class FinanceService
     }
 
     // BUDGET WARNINGS (Hanya untuk Personal & Profesional)
+    public function saldoWarnings(int $userId)
+    {
+        $warnings = [];
+
+        $totalPemasukan = $this->totalPemasukan($userId);
+        $totalPengeluaran = $this->totalPengeluaran($userId);
+
+        if ($totalPemasukan <= 0) return $warnings;
+
+        $persen = ($totalPengeluaran / $totalPemasukan) * 100;
+
+        if ($persen >= 100) {
+            $warnings[] = [
+                'id'      => 'saldo-habis',
+                'type'    => 'danger',
+                'icon'    => '🚨',
+                'title'   => 'Saldo Habis!',
+                'message' => 'Total pengeluaran kamu sudah melebihi total pemasukan.',
+                'time'    => 'Sekarang'
+            ];
+        } elseif ($persen >= 80) {
+            $warnings[] = [
+                'id'      => 'saldo-menipis',
+                'type'    => 'warning',
+                'icon'    => '⚠️',
+                'title'   => 'Saldo Menipis',
+                'message' => 'Total pengeluaran sudah mencapai ' . round($persen) . '% dari total pemasukan.',
+                'time'    => 'Sekarang'
+            ];
+        }
+
+        return $warnings;
+    }
+
+    public function allWarnings(int $userId)
+    {
+        return array_merge(
+            $this->saldoWarnings($userId),
+            $this->budgetWarnings($userId)
+        );
+    }
+
     public function budgetWarnings(int $userId)
     {
-        $now = Carbon::now();
+        $now   = Carbon::now();
         $month = $now->month;
-        $year = $now->year;
+        $year  = $now->year;
 
-        // Ambil semua budget user bulan ini
         $budgets = \App\Models\Budget::with('kategori')
             ->where('user_id', $userId)
             ->where('bulan', $month)
@@ -203,21 +244,21 @@ class FinanceService
 
             if ($persen >= 100) {
                 $warnings[] = [
-                    'id' => 'budget-over-' . $b->id,
-                    'type' => 'danger',
-                    'icon' => '🚨',
-                    'title' => 'Budget Terlampaui!',
+                    'id'      => 'budget-over-' . $b->id,
+                    'type'    => 'danger',
+                    'icon'    => '🚨',
+                    'title'   => 'Budget Terlampaui!',
                     'message' => "Pengeluaran untuk <strong>{$b->kategori->nama}</strong> telah melebihi budget bulanan.",
-                    'time' => 'Sekarang'
+                    'time'    => 'Sekarang'
                 ];
             } elseif ($persen >= 80) {
                 $warnings[] = [
-                    'id' => 'budget-warn-' . $b->id,
-                    'type' => 'warning',
-                    'icon' => '⚠️',
-                    'title' => 'Budget Menipis',
+                    'id'      => 'budget-warn-' . $b->id,
+                    'type'    => 'warning',
+                    'icon'    => '⚠️',
+                    'title'   => 'Budget Menipis',
                     'message' => "Pengeluaran <strong>{$b->kategori->nama}</strong> sudah mencapai " . round($persen) . "% dari budget.",
-                    'time' => 'Sekarang'
+                    'time'    => 'Sekarang'
                 ];
             }
         }

@@ -3,7 +3,7 @@
 @php
     $warnings = [];
     if (auth()->user()->canAccess('peringatan_budget')) {
-        $warnings = $finance->budgetWarnings(auth()->id());
+        $warnings = $finance->allWarnings(auth()->id());
     }
 @endphp
 
@@ -21,23 +21,25 @@
         </div>
         <div class="notif-list">
             @forelse($warnings as $notif)
-                <div class="notif-item {{ $notif['type'] }}">
-                    <div class="notif-icon">{{ $notif['icon'] }}</div>
-                    <div class="notif-content">
-                        <div class="notif-title">{{ $notif['title'] }}</div>
-                        <div class="notif-message">{!! $notif['message'] !!}</div>
-                        <div class="notif-time">{{ $notif['time'] }}</div>
+            <div class="notif-item {{ $notif['type'] }}">
+                <div class="notif-icon">{{ $notif['icon'] }}</div>
+                <div class="notif-content">
+                    <div class="notif-title">{{ $notif['title'] }}</div>
+                    <div class="notif-message">{!! $notif['message'] !!}</div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:6px;">
+                        <span class="notif-time">{{ $notif['time'] }}</span>
+                        @if(str_starts_with($notif['id'], 'budget'))
+                            <a href="/budget" style="font-size:0.7rem; color:var(--primary); font-weight:700; text-decoration:none;">Kelola Budget →</a>
+                        @endif
                     </div>
                 </div>
+            </div>
             @empty
                 <div class="notif-empty">
                     <div class="empty-icon">📭</div>
                     <p>Tidak ada notifikasi saat ini.</p>
                 </div>
             @endforelse
-        </div>
-        <div class="notif-footer" style="padding: 0.75rem; text-align: center; border-top: 1px solid var(--border); background: #f8fafc;">
-            <a href="/budget" style="font-size: 0.75rem; color: var(--primary); font-weight: 700; text-decoration: none;">Kelola Budget →</a>
         </div>
     </div>
 </div>
