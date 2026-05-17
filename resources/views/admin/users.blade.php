@@ -20,9 +20,11 @@
     <nav class="sidebar-nav">
         <div class="nav-section">Menu</div>
         <a href="{{ route('admin.index') }}" class="nav-item">📊 Dashboard</a>
+        <a href="{{ route('admin.payments') }}" class="nav-item">💳 Riwayat Payment</a>
         <a href="{{ route('admin.users') }}" class="nav-item active">👥 Manajemen User</a>
+        <div class="nav-section">Analitik</div>
+        <a href="{{ route('admin.revenue') }}" class="nav-item">📈 Laporan Revenue</a>
         <div class="nav-section">Akun</div>
-        <a href="{{ route('dashboard') }}" class="nav-item">🏠 Ke Aplikasi</a>
         <form method="POST" action="{{ route('logout') }}" style="margin:0;">
             @csrf
             <button type="submit" class="nav-item">
@@ -114,7 +116,7 @@
                     @foreach($users as $user)
                     <tr>
                         <td>
-                            <div style="font-weight:600;">{{ $user->name }}</div>
+                            <a href="{{ route('admin.user.detail', $user->id) }}" style="font-weight:600;color:var(--dark);text-decoration:none;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text)'">{{ $user->name }}</a>
                             <div style="color:var(--gray);font-size:0.78rem;">{{ $user->email }}</div>
                         </td>
                         <td>

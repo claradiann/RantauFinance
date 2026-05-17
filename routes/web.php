@@ -95,10 +95,13 @@ Route::middleware('auth')->group(function () {
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
 
     Route::get('/',                              [AdminController::class, 'index'])         ->name('index');
+    Route::get('/payments',                      [AdminController::class, 'payments'])      ->name('payments');
+    Route::get('/revenue',                       [AdminController::class, 'revenue'])       ->name('revenue');
     Route::get('/payments/{payment}',            [AdminController::class, 'paymentDetail']) ->name('payment.detail');
     Route::post('/payments/{payment}/confirm',   [AdminController::class, 'confirm'])       ->name('payment.confirm');
     Route::post('/payments/{payment}/reject',    [AdminController::class, 'reject'])        ->name('payment.reject');
     Route::get('/users',                         [AdminController::class, 'users'])         ->name('users');
+    Route::get('/users/{user}',                  [AdminController::class, 'userDetail'])    ->name('user.detail');
     Route::post('/users/{user}/suspend',         [AdminController::class, 'suspend'])       ->name('user.suspend');
     Route::post('/users/{user}/unsuspend',       [AdminController::class, 'unsuspend'])     ->name('user.unsuspend');
     Route::post('/users/{user}/reset-password',  [AdminController::class, 'resetPassword']) ->name('user.reset-password');

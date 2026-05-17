@@ -21,9 +21,11 @@
     <nav class="sidebar-nav">
         <div class="nav-section">Menu</div>
         <a href="{{ route('admin.index') }}" class="nav-item active">📊 Dashboard</a>
+        <a href="{{ route('admin.payments') }}" class="nav-item">💳 Riwayat Payment</a>
         <a href="{{ route('admin.users') }}" class="nav-item">👥 Manajemen User</a>
+        <div class="nav-section">Analitik</div>
+        <a href="{{ route('admin.revenue') }}" class="nav-item">📈 Laporan Revenue</a>
         <div class="nav-section">Akun</div>
-        <a href="{{ route('dashboard') }}" class="nav-item">🏠 Ke Aplikasi</a>
         <form method="POST" action="{{ route('logout') }}" style="margin:0;">
             @csrf
             <button type="submit" class="nav-item">
@@ -32,8 +34,15 @@
         </form>
     </nav>
     <div class="sidebar-footer">
-        Logged in sebagai<br>
-        <strong>{{ auth()->user()->name }}</strong>
+        <div class="user-card">
+            <div class="user-avatar">
+                {{ strtoupper(substr(auth()->user()->name, 0, 2)) }}
+            </div>
+            <div class="user-info">
+                <div class="name">{{ auth()->user()->name }}</div>
+                <div class="role">⚙️ Administrator</div>
+            </div>
+        </div>
     </div>
 </aside>
 

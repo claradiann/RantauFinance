@@ -88,7 +88,7 @@ class AdminController extends Controller
         }
 
         return redirect()->route('admin.index')
-            ->with('success', "Pembayaran #{$payment->id} ({$user->name}) dikonfirmasi. Akun sekarang aktif.");
+            ->with('success', "Pembayaran #{$payment->id} ({$user->name}) dikonfirmasi. Akun sekarang aktif dengan plan " . ucfirst($payment->plan) . ".");
     }
 
     // Tolak pembayaran
@@ -151,6 +151,42 @@ class AdminController extends Controller
         return view('admin.users', compact('users'));
     }
 
+    // Detail user
+    public function userDetail(User $user)
+    {
+        $payments = Payment::where('user_id', $user->id)
+            ->latest()
+            ->paginate(10);
+
+        return view('admin.user-detail', compact('user', 'payments'));
+    }
+
+    // Riwayat semua payment
+    public function payments(Request $request)
+    {
+        $query = Payment::with('user')->latest();
+
+        if ($request->status) $query->where('status', $request->status);
+        if ($request->plan)   $query->where('plan', $request->plan);
+        if ($request->search) {
+            $query->whereHas('user', function ($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->search . '%')
+                  ->orWhere('email', 'like', '%' . $request->search . '%');
+            });
+        }
+
+        $payments = $query->paginate(20)->withQueryString();
+
+        $stats = [
+            'pending'   => Payment::where('status', 'pending')->count(),
+            'confirmed' => Payment::where('status', 'confirmed')->count(),
+            'rejected'  => Payment::where('status', 'rejected')->count(),
+            'total'     => Payment::count(),
+        ];
+
+        return view('admin.payments', compact('payments', 'stats'));
+    }
+
     // Suspend user
     public function suspend(User $user)
     {
@@ -187,26 +223,88 @@ class AdminController extends Controller
         return back()->with('success', "Plan {$user->name} berhasil diubah ke " . ucfirst($request->plan) . ".");
     }
 
-    // Reset password user
+    // Reset password user — menggunakan template email yang benar
     public function resetPassword(User $user)
     {
         $plainPassword = strtoupper(Str::random(4)) . rand(100, 999) . Str::random(1);
         $user->update(['password' => Hash::make($plainPassword)]);
 
         try {
-            Mail::send('email.payment-confirmed', [
+            Mail::send('email.password-reset', [
                 'user'          => $user,
                 'plainPassword' => $plainPassword,
-                'payment'       => $user->payments()->latest()->first(),
-                'is_reset'      => true,
             ], function ($message) use ($user) {
                 $message->to($user->email, $user->name)
                     ->subject('🔑 Reset Password RantauFinance');
             });
         } catch (\Exception $e) {
-            return back()->with('warning', "Password baru: <strong>{$plainPassword}</strong> — email gagal, sampaikan manual.");
+            Log::error('Gagal kirim email reset password: ' . $e->getMessage());
+            return back()->with('warning', "Password baru: <strong>{$plainPassword}</strong> — email gagal terkirim, sampaikan manual ke user.");
         }
 
         return back()->with('success', "Password {$user->name} direset. Dikirim ke {$user->email}.");
+    }
+
+    // Laporan Revenue
+    public function revenue()
+    {
+        // Revenue bulanan 12 bulan terakhir
+        $monthlyRevenue = Payment::where('status', 'confirmed')
+            ->where('confirmed_at', '>=', now()->subMonths(11)->startOfMonth())
+            ->selectRaw("DATE_FORMAT(confirmed_at, '%Y-%m') as bulan, SUM(nominal) as total, COUNT(*) as jumlah")
+            ->groupBy('bulan')
+            ->orderBy('bulan')
+            ->get();
+
+        // Isi bulan kosong agar chart lengkap 12 bulan
+        $months = collect();
+        for ($i = 11; $i >= 0; $i--) {
+            $key = now()->subMonths($i)->format('Y-m');
+            $found = $monthlyRevenue->firstWhere('bulan', $key);
+            $months->push([
+                'bulan'  => now()->subMonths($i)->translatedFormat('M Y'),
+                'key'    => $key,
+                'total'  => $found ? (float) $found->total : 0,
+                'jumlah' => $found ? (int) $found->jumlah : 0,
+            ]);
+        }
+
+        // Revenue per plan
+        $revenueByPlan = Payment::where('status', 'confirmed')
+            ->selectRaw("plan, SUM(nominal) as total, COUNT(*) as jumlah")
+            ->groupBy('plan')
+            ->get()
+            ->keyBy('plan');
+
+        // Statistik keseluruhan
+        $totalRevenue    = Payment::where('status', 'confirmed')->sum('nominal');
+        $totalConfirmed  = Payment::where('status', 'confirmed')->count();
+        $avgPerPayment   = $totalConfirmed > 0 ? $totalRevenue / $totalConfirmed : 0;
+
+        // Revenue bulan ini vs bulan lalu
+        $thisMonth = Payment::where('status', 'confirmed')
+            ->whereMonth('confirmed_at', now()->month)
+            ->whereYear('confirmed_at', now()->year)
+            ->sum('nominal');
+
+        $lastMonth = Payment::where('status', 'confirmed')
+            ->whereMonth('confirmed_at', now()->subMonth()->month)
+            ->whereYear('confirmed_at', now()->subMonth()->year)
+            ->sum('nominal');
+
+        $growth = $lastMonth > 0 ? round((($thisMonth - $lastMonth) / $lastMonth) * 100, 1) : ($thisMonth > 0 ? 100 : 0);
+
+        // Top 5 user by total spending
+        $topUsers = User::where('is_admin', false)
+            ->withSum(['payments as total_bayar' => fn($q) => $q->where('status', 'confirmed')], 'nominal')
+            ->having('total_bayar', '>', 0)
+            ->orderByDesc('total_bayar')
+            ->limit(5)
+            ->get();
+
+        return view('admin.revenue', compact(
+            'months', 'revenueByPlan', 'totalRevenue', 'totalConfirmed',
+            'avgPerPayment', 'thisMonth', 'lastMonth', 'growth', 'topUsers'
+        ));
     }
 }
