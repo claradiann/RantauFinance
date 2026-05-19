@@ -20,7 +20,12 @@ class CheckTransaksiLimit
             return $next($request);
         }
 
-        $maxPerBulan    = $user->maxTransaksiPerBulan(); // 30
+        $maxPerBulan    = $user->maxTransaksiPerBulan(); // 50 atau null jika trial
+        
+        if ($maxPerBulan === null) {
+            return $next($request);
+        }
+
         $jumlahBulanIni = $user->transaksi()
             ->whereYear('tanggal', now()->year)
             ->whereMonth('tanggal', now()->month)
@@ -29,7 +34,7 @@ class CheckTransaksiLimit
         if ($jumlahBulanIni >= $maxPerBulan) {
             if ($request->expectsJson()) {
                 return response()->json([
-                    'message' => 'Batas transaksi bulanan paket Starter sudah tercapai (30/bulan).',
+                    'message' => 'Batas transaksi bulanan paket Starter sudah tercapai (50/bulan).',
                     'limit'   => $maxPerBulan,
                     'current' => $jumlahBulanIni,
                 ], 403);

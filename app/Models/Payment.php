@@ -94,8 +94,8 @@ class Payment extends Model
     public static function nominalByPlan(string $plan): int
     {
         return match ($plan) {
-            'personal'    => 29000,
-            'profesional' => 49000,
+            'personal'    => 12000,
+            'profesional' => 25000,
             default       => 0,
         };
     }

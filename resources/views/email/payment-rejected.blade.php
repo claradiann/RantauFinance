@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pembayaran Tidak Dapat Diproses — RantauFinance</title>
+    <link rel="icon" type="image/png" href="{{ asset('images/logo_RD.png') }}">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -198,3 +199,4 @@
 </div>
 </body>
 </html>
+

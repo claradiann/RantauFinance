@@ -34,7 +34,7 @@ class ProfileController extends Controller
 
     public function updatePassword(Request $request): RedirectResponse
     {
-        $request->validate([
+        $request->validateWithBag('updatePassword', [
             'current_password' => ['required', 'current_password'],
             'password'         => ['required', 'min:8', 'confirmed'],
         ]);

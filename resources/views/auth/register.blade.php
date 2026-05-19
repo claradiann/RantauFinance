@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Daftar — RantauFinance</title>
+    <link rel="icon" type="image/png" href="{{ asset('images/logo_RD.png') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/auth.css') }}">
@@ -209,7 +210,7 @@
     <div class="auth-brand register-brand">
         <div class="brand-content">
             <div class="brand-logo">
-                <span>💰</span> RantauFinance
+                <img src="{{ asset('images/logo_RD.png') }}" style="height: 54px; margin-right: 8px;"> RantauFinance
             </div>
             <h2>Mulai kelola keuanganmu sekarang</h2>
             <p>Buat akun gratis dan akses semua fitur dasar untuk mengelola keuangan bulananmu dengan lebih cerdas.</p>
@@ -239,7 +240,7 @@
     <div class="auth-form-panel register-form-panel">
         <div class="auth-form-wrapper">
             <div class="auth-form-header">
-                <div class="mobile-logo">💰 RantauFinance</div>
+                <div class="mobile-logo" style="display:flex;align-items:center;justify-content:center;gap:8px;"><img src="{{ asset('images/logo_RD.png') }}" style="height: 54px;"> RantauFinance</div>
                 <h1>Buat Akun Baru ✨</h1>
                 <p>Pilih paket yang sesuai dan mulai perjalanan finansialmu</p>
             </div>
@@ -286,7 +287,7 @@
                                 </div>
                                 <div class="plan-price">Rp 0 — Selamanya gratis</div>
                                 <ul class="plan-features">
-                                    <li>Input transaksi (maks 30/bln)</li>
+                                    <li>Input transaksi (maks 50/bln)</li>
                                     <li>Kategori dasar</li>
                                     <li>Laporan bulanan sederhana</li>
                                     <li>Total pemasukan & pengeluaran</li>
@@ -305,7 +306,7 @@
                                     <span class="plan-name">Personal</span>
                                     <span class="plan-badge badge-blue">POPULER</span>
                                 </div>
-                                <div class="plan-price">Rp 29.000/bulan</div>
+                                <div class="plan-price">Rp 12.000/bulan</div>
                                 <ul class="plan-features">
                                     <li>Transaksi unlimited</li>
                                     <li>Dashboard grafik basic</li>
@@ -326,7 +327,7 @@
                                     <span class="plan-name">Professional</span>
                                     <span class="plan-badge badge-purple">PRO</span>
                                 </div>
-                                <div class="plan-price">Rp 49.000/bulan</div>
+                                <div class="plan-price">Rp 25.000/bulan</div>
                                 <ul class="plan-features">
                                     <li>Semua fitur Personal</li>
                                     <li>Insight & Analisis cerdas</li>
@@ -403,7 +404,7 @@
                 </div>
 
                 <button type="submit" class="btn-submit" style="margin-top: 0.5rem;">
-                    Daftar Sekarang →
+                    Daftar Sekarang
                 </button>
             </form>
 

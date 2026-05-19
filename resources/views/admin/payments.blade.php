@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Riwayat Payment — Admin RantauFinance</title>
+    <link rel="icon" type="image/png" href="{{ asset('images/logo_RD.png') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
@@ -13,7 +14,7 @@
 <aside class="sidebar">
     <div class="sidebar-logo">
         <div>
-            💰 RantauFinance
+            <img src="{{ asset('images/logo_RD.png') }}" style="height: 48px; vertical-align: middle;"> RantauFinance
             <span class="admin-badge">Admin Panel</span>
         </div>
     </div>
@@ -196,3 +197,4 @@
 
 </body>
 </html>
+

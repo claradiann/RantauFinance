@@ -33,6 +33,15 @@ class RegisteredUserController extends Controller
             'email'    => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'plan'     => ['required', 'in:starter,personal,profesional'],
+        ], [
+            'name.required'     => 'Nama lengkap wajib diisi.',
+            'name.max'          => 'Nama lengkap tidak boleh lebih dari 255 karakter.',
+            'email.required'    => 'Alamat email wajib diisi.',
+            'email.email'       => 'Format alamat email tidak valid.',
+            'email.unique'      => 'Email ini sudah terdaftar. Silakan login atau gunakan email lain.',
+            'password.required' => 'Password wajib diisi.',
+            'password.confirmed'=> 'Konfirmasi password tidak cocok.',
+            'password.min'      => 'Password minimal harus terdiri dari 8 karakter.',
         ]);
 
         $plan = $request->plan;

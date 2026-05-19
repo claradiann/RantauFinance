@@ -55,12 +55,20 @@ class User extends Authenticatable
      */
     public function effectivePlan(): string
     {
-        return $this->isPlanActive() ? $this->plan : 'starter';
+        return ($this->isPlanActive() && $this->plan) ? $this->plan : 'starter';
     }
 
     public function isStarter(): bool
     {
         return $this->effectivePlan() === 'starter';
+    }
+
+    /**
+     * Cek apakah user sedang dalam masa trial 30 hari (starter)
+     */
+    public function isTrialActive(): bool
+    {
+        return $this->plan === 'starter' && $this->created_at && $this->created_at->addDays(30)->isFuture();
     }
 
     public function isPersonal(): bool
@@ -83,7 +91,7 @@ class User extends Authenticatable
      */
     const PLAN_FEATURES = [
         'starter' => [
-            'input_transaksi',        // maks 30/bulan
+            'input_transaksi',        // maks 50/bulan
             'kategori_dasar',
             'laporan_bulanan_simpel',
             'riwayat_transaksi',      // total pemasukan & pengeluaran
@@ -97,7 +105,6 @@ class User extends Authenticatable
             'filter_cari_transaksi',
             'laporan_bulanan_detail',
             'budget_planner',
-            'peringatan_budget',
         ],
         'profesional' => [
             'input_transaksi',
@@ -130,7 +137,7 @@ class User extends Authenticatable
      */
     public function canAccess(string $feature): bool
     {
-        $plan = $this->effectivePlan();
+        $plan = $this->isTrialActive() ? 'profesional' : $this->effectivePlan();
         return in_array($feature, self::PLAN_FEATURES[$plan] ?? []);
     }
 
@@ -139,7 +146,8 @@ class User extends Authenticatable
      */
     public function maxTransaksiPerBulan(): int|null
     {
-        return $this->isStarter() ? 30 : null; // null = unlimited
+        if ($this->isTrialActive()) return null; // unlimited untuk trial
+        return $this->isStarter() ? 50 : null; // null = unlimited
     }
 
     /**
@@ -147,6 +155,7 @@ class User extends Authenticatable
      */
     public function planLabel(): string
     {
+        if ($this->isTrialActive()) return 'Starter (Trial 30 Hari)';
         return match ($this->effectivePlan()) {
             'personal'    => 'Personal',
             'profesional' => 'Profesional',
@@ -159,6 +168,7 @@ class User extends Authenticatable
      */
     public function planColor(): string
     {
+        if ($this->isTrialActive()) return 'purple';
         return match ($this->effectivePlan()) {
             'personal'    => 'blue',
             'profesional' => 'purple',
