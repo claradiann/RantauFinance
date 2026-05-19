@@ -327,12 +327,13 @@
                                     <span class="plan-name">Professional</span>
                                     <span class="plan-badge badge-purple">PRO</span>
                                 </div>
-                                <div class="plan-price">Rp 25.000/bulan</div>
+                                <div class="plan-price">Rp 20.000/bulan</div>
                                 <ul class="plan-features">
                                     <li>Semua fitur Personal</li>
                                     <li>Insight & Analisis cerdas</li>
                                     <li>Peringatan budget</li>
                                     <li>Export CSV & PDF</li>
+                                    <li>Kategori custom unlimited</li>
                                 </ul>
                             </div>
                         </label>

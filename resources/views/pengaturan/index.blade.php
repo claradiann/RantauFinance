@@ -463,7 +463,7 @@
                                 {{-- Profesional --}}
                                 <div class="plan-card {{ auth()->user()->effectivePlan() === 'profesional' ? 'current' : '' }}">
                                     <div class="plan-name">Profesional</div>
-                                    <div class="plan-price">Rp 25.000 <span>/bulan</span></div>
+                                    <div class="plan-price">Rp 20.000 <span>/bulan</span></div>
                                     <ul class="plan-features">
                                         <li>Semua fitur Personal</li>
                                         <li>Insight & Analisis cerdas</li>

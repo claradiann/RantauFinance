@@ -197,6 +197,26 @@
             </form>
         </div>
 
+        {{-- Smart Insights (Professional Only) --}}
+        @if(isset($smartInsight))
+        <div class="card" style="margin-bottom: 1.5rem; background: linear-gradient(135deg, #f8fafc, #f1f5f9); border: 1px solid #e2e8f0;">
+            <div class="card-header" style="border-bottom: none; padding-bottom: 0;">
+                <h3 style="color: var(--primary); display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 1.25rem;">🧠</span> Analisis Laporan Cerdas
+                </h3>
+            </div>
+            <div class="card-body" style="padding-top: 1rem;">
+                <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.75rem;">
+                    @foreach($smartInsight as $insight)
+                    <li style="font-size: 0.9rem; color: var(--dark); background: white; padding: 1rem 1.25rem; border-radius: 8px; border-left: 4px solid var(--primary); box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                        {!! $insight !!}
+                    </li>
+                    @endforeach
+                </ul>
+            </div>
+        </div>
+        @endif
+
         {{-- Summary Cards --}}
         <div class="summary-row">
             <div class="summary-card">

@@ -26,8 +26,6 @@ class DashboardController extends Controller
         $transaksiTerbaru = $finance->transaksiTerbaru($userId);
         $pengeluaranPerKategori = $finance->pengeluaranPerKategori($userId, $currentMonth, $currentYear);
         $chartData = $finance->chart6Bulan($userId);
-        $totalTransaksi = $finance->totalTransaksiBulanIni($userId, $currentMonth, $currentYear);
-
         return view('transaksi.dashboard', compact(
             'saldo',
             'pemasukanBulanIni',
