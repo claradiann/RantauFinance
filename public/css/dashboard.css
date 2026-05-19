@@ -386,3 +386,9 @@ body { font-family: 'Inter', sans-serif; background: var(--light); color: var(--
     .stats-row { grid-template-columns: 1fr; }
     .quick-actions { grid-template-columns: 1fr 1fr; }
 }
+
+/* Mobile Dashboard Fixes */
+@media (max-width: 768px) {
+    .mobile-header img { height: 28px !important; }
+    .mobile-header span { font-size: 1.2rem !important; }
+}

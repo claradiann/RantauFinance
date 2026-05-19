@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pembayaran — RantauFinance</title>
+    <link rel="icon" type="image/png" href="{{ asset('images/logo_RD.png') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/auth.css') }}">
@@ -308,7 +309,7 @@
     <div class="auth-brand payment-brand">
         <div class="brand-content">
             <div class="brand-logo">
-                <span>💰</span> RantauFinance
+                <img src="{{ asset('images/logo_RD.png') }}" style="height: 54px; margin-right: 8px;"> RantauFinance
             </div>
             <h2>Satu langkah lagi untuk akun premiummu</h2>
             <p>Transfer pembayaran dan nikmati semua fitur premium Rantau Finance untuk mengelola keuanganmu lebih optimal.</p>
@@ -338,7 +339,7 @@
     <div class="auth-form-panel payment-form-panel">
         <div class="auth-form-wrapper">
             <div class="auth-form-header">
-                <div class="mobile-logo">💰 RantauFinance</div>
+                <div class="mobile-logo" style="display:flex;align-items:center;justify-content:center;gap:8px;"><img src="{{ asset('images/logo_RD.png') }}" style="height: 54px;"> RantauFinance</div>
                 <h1>Selesaikan Pembayaran 💳</h1>
                 <p>Halo, {{ $user->name }}! Transfer sesuai nominal lalu upload buktinya.</p>
             </div>
@@ -404,8 +405,8 @@
             <form method="POST" action="{{ route('payment.upload') }}" enctype="multipart/form-data" id="paymentForm">
                 @csrf
 
-                {{-- Pilih Metode --}}
-                <div style="margin-bottom: 1.25rem;">
+                {{-- Pilih Metode (Disembunyikan sementara, fokus ke Transfer Bank) --}}
+                <div style="margin-bottom: 1.25rem; display: none;">
                     <p class="section-label-sm">Pilih Metode Pembayaran</p>
                     <div class="metode-tabs">
                         <button type="button" class="tab-btn active" onclick="selectMetode('transfer')" id="tab-transfer">

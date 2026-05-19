@@ -24,10 +24,10 @@
 @endphp
 
 <aside class="sidebar" id="sidebar">
-    <a href="/" class="sidebar-logo">
-        <div class="logo-icon">💰</div>
+    <div class="sidebar-logo" style="cursor: default;">
+        <img src="{{ asset('images/logo_RD.png') }}" style="height: 48px;">
         <span class="logo-text">RantauFinance</span>
-    </a>
+    </div>
 
     <nav class="sidebar-nav">
         @php $currentSection = null; @endphp
@@ -197,3 +197,4 @@ function showUpgradeToast(featureName, minPlan) {
     window._upgradeToastTimer = setTimeout(() => toast.classList.remove('show'), 4000);
 }
 </script>
+

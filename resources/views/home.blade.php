@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Rantau Finance - Platform manajemen keuangan bulanan yang cerdas dan modern. Kelola pemasukan, pengeluaran, dan budget dengan mudah.">
     <title>Rantau Finance — Kelola Keuangan Cerdas</title>
+    <link rel="icon" type="image/png" href="{{ asset('images/logo_RD.png') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/home.css') }}">
@@ -13,7 +14,7 @@
 
 {{-- ===== NAVBAR ===== --}}
 <nav class="navbar" id="navbar">
-    <a href="/" class="nav-logo">💰 RantauFinance</a>
+    <a href="/" class="nav-logo"><img src="{{ asset('images/logo_RD.png') }}" style="height: 48px; vertical-align: middle;"> RantauFinance</a>
     <ul class="nav-links">
         <li><a href="#features">Fitur</a></li>
         <li><a href="#how-it-works">Cara Kerja</a></li>
@@ -45,7 +46,7 @@
             </p>
             <div class="hero-buttons">
                 <a href="/register" class="btn-primary-custom btn-lg">
-                    Mulai Gratis →
+                    Mulai Gratis
                 </a>
                 <a href="#features" class="btn-outline-custom btn-lg">
                     Pelajari Lebih
@@ -241,7 +242,7 @@
                 <p class="price-note">Mulai sadar kemana uangmu pergi</p>
             </div>
             <ul class="pricing-features" style="flex: 1;">
-                <li><span class="check">✓</span> Input transaksi (maks 30/bulan)</li>
+                <li><span class="check">✓</span> Input transaksi (maks 50/bulan)</li>
                 <li><span class="check">✓</span> Kategori dasar</li>
                 <li><span class="check">✓</span> Laporan bulanan sederhana</li>
                 <li><span class="check">✓</span> Total pemasukan & pengeluaran</li>
@@ -254,7 +255,7 @@
             <span class="popular-badge">🔥 Paling Populer</span>
             <div class="pricing-header">
                 <h3>Personal</h3>
-                <div class="price">Rp 29K<span>/bulan</span></div>
+                <div class="price">Rp 12K<span>/bulan</span></div>
                 <p class="price-note">Atur pengeluaran biar tetap stabil</p>
             </div>
             <ul class="pricing-features" style="flex: 1;">
@@ -271,7 +272,7 @@
         <div class="pricing-card" style="display: flex; flex-direction: column;">
             <div class="pricing-header">
                 <h3>Professional</h3>
-                <div class="price">Rp 49K<span>/bulan</span></div>
+                <div class="price">Rp 25K<span>/bulan</span></div>
                 <p class="price-note">Kontrol penuh + insight pintar</p>
             </div>
             <ul class="pricing-features" style="flex: 1;">
@@ -304,7 +305,6 @@
                     <div class="testimonial-avatar">AS</div>
                     <div class="testimonial-info">
                         <h5>Ahmad Surya</h5>
-                        <p>Software Engineer</p>
                     </div>
                 </div>
             </div>
@@ -317,7 +317,6 @@
                     <div class="testimonial-avatar">DP</div>
                     <div class="testimonial-info">
                         <h5>Dina Pratiwi</h5>
-                        <p>Content Creator</p>
                     </div>
                 </div>
             </div>
@@ -330,7 +329,6 @@
                     <div class="testimonial-avatar">RH</div>
                     <div class="testimonial-info">
                         <h5>Rizky Hidayat</h5>
-                        <p>Mahasiswa S2</p>
                     </div>
                 </div>
             </div>
@@ -343,7 +341,6 @@
                     <div class="testimonial-avatar">MF</div>
                     <div class="testimonial-info">
                         <h5>Maya Fitriani</h5>
-                        <p>Freelance Designer</p>
                     </div>
                 </div>
             </div>
@@ -356,7 +353,6 @@
                     <div class="testimonial-avatar">BW</div>
                     <div class="testimonial-info">
                         <h5>Budi Wicaksono</h5>
-                        <p>Startup Founder</p>
                     </div>
                 </div>
             </div>
@@ -369,7 +365,6 @@
                     <div class="testimonial-avatar">SN</div>
                     <div class="testimonial-info">
                         <h5>Sari Nurhaliza</h5>
-                        <p>Akuntan</p>
                     </div>
                 </div>
             </div>
@@ -391,7 +386,7 @@
                 <span class="arrow">▼</span>
             </button>
             <div class="faq-answer">
-                Ya! Paket Starter kami sepenuhnya gratis selamanya. Kamu bisa mencatat hingga 30 transaksi per bulan, mengakses laporan sederhana, dan mencatat total pemasukan tanpa biaya apapun.
+                Ya! Paket Starter kami sepenuhnya gratis selamanya. Kamu bisa mencatat hingga 50 transaksi per bulan, mengakses laporan sederhana, dan mencatat total pemasukan tanpa biaya apapun.
             </div>
         </div>
         <div class="faq-item">
@@ -439,7 +434,7 @@
         <h2>Siap Mengelola Keuanganmu?</h2>
         <p>Bergabung dengan 10,000+ pengguna yang sudah merasakan kemudahan Rantau Finance. Daftar gratis sekarang.</p>
         <a href="/register" class="btn-primary-custom btn-lg">
-            Mulai Sekarang —  Gratis →
+            Mulai Sekarang —  Gratis
         </a>
     </div>
 </section>
@@ -448,7 +443,7 @@
 <footer class="footer">
     <div class="footer-grid">
         <div class="footer-brand">
-            <h3>💰 RantauFinance</h3>
+            <h3><img src="{{ asset('images/logo_RD.png') }}" style="height: 48px; vertical-align: middle;"> RantauFinance</h3>
             <p>Platform manajemen keuangan bulanan yang cerdas dan modern. Kelola pemasukan, pengeluaran, dan budget dengan mudah.</p>
         </div>
         <div class="footer-col">
@@ -463,10 +458,10 @@
         <div class="footer-col">
             <h4>Perusahaan</h4>
             <ul>
-                <li><a href="#">Tentang Kami</a></li>
+                <li><a href="/tentang-kami">Tentang Kami</a></li>
                 <li><a href="#">Blog</a></li>
                 <li><a href="#">Karir</a></li>
-                <li><a href="#">Kontak</a></li>
+                <li><a href="https://wa.me/6282271477947" target="_blank">Kontak</a></li>
             </ul>
         </div>
         <div class="footer-col">

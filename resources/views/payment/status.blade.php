@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Status Pembayaran — RantauFinance</title>
+    <link rel="icon" type="image/png" href="{{ asset('images/logo_RD.png') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/auth.css') }}">
@@ -94,8 +95,11 @@
         }
         .bukti-preview img {
             width: 100%;
-            max-height: 180px;
-            object-fit: cover;
+            max-height: 350px;
+            object-fit: contain;
+            background: #f8fafc;
+            display: block;
+            cursor: pointer;
         }
 
         /* Buttons */
@@ -190,14 +194,14 @@
     <div class="auth-brand status-brand">
         <div class="brand-content">
             <div class="brand-logo">
-                <span>💰</span> RantauFinance
+                <img src="{{ asset('images/logo_RD.png') }}" style="height: 54px; margin-right: 8px;"> RantauFinance
             </div>
             @if(!$payment)
                 <h2>Belum ada pembayaran ditemukan</h2>
                 <p>Upload bukti pembayaran untuk melanjutkan proses aktivasi akun premiummu.</p>
             @elseif($payment->isPending())
                 <h2>Pembayaranmu sedang diproses</h2>
-                <p>Tim kami sedang memverifikasi bukti pembayaran. Kamu akan menerima password login melalui email setelah dikonfirmasi.</p>
+                <p>Tim kami sedang memverifikasi bukti pembayaran. Akun kamu akan diaktifkan segera setelah pembayaran dikonfirmasi.</p>
             @elseif($payment->isConfirmed())
                 <h2>Selamat! Akunmu sudah aktif 🎉</h2>
                 <p>Kamu sekarang memiliki akses penuh ke semua fitur premium Rantau Finance. Mulai kelola keuanganmu sekarang!</p>
@@ -231,7 +235,7 @@
     <div class="auth-form-panel status-form-panel">
         <div class="auth-form-wrapper">
             <div class="auth-form-header" style="text-align: center;">
-                <div class="mobile-logo">💰 RantauFinance</div>
+                <div class="mobile-logo" style="display:flex;align-items:center;justify-content:center;gap:8px;"><img src="{{ asset('images/logo_RD.png') }}" style="height: 54px;"> RantauFinance</div>
             </div>
 
             @if(!$payment)
@@ -249,7 +253,7 @@
                 <div class="status-title">Menunggu Konfirmasi</div>
                 <div class="status-desc">
                     Bukti pembayaran kamu sudah kami terima.<br>
-                    Admin akan memverifikasi dan mengirimkan <strong>password login</strong> ke email kamu dalam <strong>1×24 jam</strong>.
+                    Admin akan memverifikasi pembayaran kamu. Akun kamu akan aktif sepenuhnya dalam <strong>1×24 jam</strong>.
                 </div>
 
                 <div class="info-box">
@@ -276,13 +280,16 @@
 
                     @if($payment->bukti_path)
                         <div class="bukti-preview">
-                            <img src="{{ Storage::url($payment->bukti_path) }}" alt="Bukti pembayaran">
+                            <img src="{{ Storage::url($payment->bukti_path) }}" alt="Bukti pembayaran" onclick="window.open(this.src,'_blank')" title="Klik untuk memperbesar">
                         </div>
+                        <p style="font-size:0.7rem;color:var(--gray);text-align:center;margin-top:0.35rem;margin-bottom:0;">
+                            Klik gambar untuk memperbesar
+                        </p>
                     @endif
                 </div>
 
                 <p style="font-size:0.85rem;color:var(--gray);margin-bottom:1.25rem;text-align:center;">
-                    Password akan dikirim ke: <strong style="color:var(--dark-2);">{{ $user->email }}</strong>
+                    Akun aktif dengan email: <strong style="color:var(--dark-2);">{{ $user->email }}</strong>
                 </p>
 
                 <a href="/dashboard" class="btn-action">Lanjutkan ke Dashboard →</a>
@@ -303,8 +310,7 @@
                 <div class="status-title">Pembayaran Dikonfirmasi!</div>
                 <div class="status-desc">
                     Selamat! Paket <strong>{{ $payment->planLabel() }}</strong> kamu sudah aktif.<br>
-                    Password login sudah dikirim ke <strong>{{ $user->email }}</strong>.
-                    Cek inbox (atau folder spam) kamu.
+                    Silakan masuk menggunakan email <strong>{{ $user->email }}</strong> dan password pendaftaran kamu.
                 </div>
 
                 <div class="info-box">

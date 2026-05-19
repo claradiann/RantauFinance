@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ isset($is_reset) && $is_reset ? 'Password Baru' : 'Pembayaran Dikonfirmasi' }} — RantauFinance</title>
+    <link rel="icon" type="image/png" href="{{ asset('images/logo_RD.png') }}">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -195,12 +196,14 @@
             </div>
             <div class="step-item">
                 <span class="step-num">3</span>
-                <span>Masukkan password di atas</span>
+                <span>@if(isset($is_reset) && $is_reset) Masukkan password baru di atas @else Masukkan password yang kamu buat saat mendaftar @endif</span>
             </div>
+            @if(isset($is_reset) && $is_reset)
             <div class="step-item">
                 <span class="step-num">4</span>
                 <span>Ganti password di menu Profil untuk keamanan</span>
             </div>
+            @endif
         </div>
 
         {{-- CTA --}}
@@ -224,3 +227,4 @@
 </div>
 </body>
 </html>
+

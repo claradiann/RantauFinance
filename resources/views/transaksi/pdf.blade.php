@@ -2,6 +2,7 @@
 <html>
 <head>
     <title>Laporan Transaksi</title>
+    <link rel="icon" type="image/png" href="{{ asset('images/logo_RD.png') }}">
     <style>
         body { font-family: sans-serif; font-size: 12px; color: #333; }
         .header { text-align: center; margin-bottom: 30px; }
@@ -25,7 +26,7 @@
     <div class="header">
         <h2>RantauFinance</h2>
         <p>Laporan Riwayat Transaksi</p>
-        <p>Nama: {{ $user->name }} | Tanggal Cetak: {{ date('d F Y') }}</p>
+        <p>Nama: {{ $user->name }} | Tanggal Cetak: {{ \Carbon\Carbon::now()->setTimezone('Asia/Jakarta')->translatedFormat('d F Y') }}</p>
     </div>
 
     <table>
@@ -63,7 +64,8 @@
     </div>
 
     <div class="footer">
-        Dicetak secara otomatis melalui sistem RantauFinance pada {{ date('d-m-Y H:i:s') }}
+        Dicetak secara otomatis melalui sistem RantauFinance pada {{ \Carbon\Carbon::now()->setTimezone('Asia/Jakarta')->format('d-m-Y H:i:s') }}
     </div>
 </body>
 </html>
+

@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pengaturan — Rantau Finance</title>
+    <link rel="icon" type="image/png" href="{{ asset('images/logo_RD.png') }}">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
     <style>
@@ -308,7 +309,7 @@
 
 <div class="mobile-header">
     <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
-    <span style="font-weight:700;font-size:1rem;">💰 RantauFinance</span>
+    <div style="display:flex;align-items:center;gap:8px;"><img src="{{ asset('images/logo_RD.png') }}" style="height: 54px;"> <span style="font-weight:700;font-size:1rem;">RantauFinance</span></div>
     <div style="width:40px;"></div>
 </div>
 <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
@@ -436,7 +437,7 @@
                                     <div class="plan-name">Starter</div>
                                     <div class="plan-price">Gratis <span>/selamanya</span></div>
                                     <ul class="plan-features">
-                                        <li>Input transaksi (maks 30/bln)</li>
+                                        <li>Input transaksi (maks 50/bln)</li>
                                         <li>Kategori dasar</li>
                                         <li>Laporan bulanan sederhana</li>
                                         <li>Total in & out</li>
@@ -446,7 +447,7 @@
                                 {{-- Personal --}}
                                 <div class="plan-card {{ auth()->user()->effectivePlan() === 'personal' ? 'current' : '' }}">
                                     <div class="plan-name">Personal</div>
-                                    <div class="plan-price">Rp 29.000 <span>/bulan</span></div>
+                                    <div class="plan-price">Rp 12.000 <span>/bulan</span></div>
                                     <ul class="plan-features">
                                         <li>Transaksi unlimited</li>
                                         <li>Dashboard grafik basic</li>
@@ -456,13 +457,13 @@
                                     @if(auth()->user()->effectivePlan() === 'personal')
                                         <span class="btn-upgrade disabled">Plan Aktif</span>
                                     @else
-                                        <a href="/payment/{{ auth()->user()->id }}?plan=personal" class="btn-upgrade">Upgrade</a>
+                                        <a href="{{ route('payment.upgrade', 'personal') }}" class="btn-upgrade">Upgrade</a>
                                     @endif
                                 </div>
                                 {{-- Profesional --}}
                                 <div class="plan-card {{ auth()->user()->effectivePlan() === 'profesional' ? 'current' : '' }}">
                                     <div class="plan-name">Profesional</div>
-                                    <div class="plan-price">Rp 49.000 <span>/bulan</span></div>
+                                    <div class="plan-price">Rp 25.000 <span>/bulan</span></div>
                                     <ul class="plan-features">
                                         <li>Semua fitur Personal</li>
                                         <li>Insight & Analisis cerdas</li>
@@ -473,7 +474,7 @@
                                     @if(auth()->user()->effectivePlan() === 'profesional')
                                         <span class="btn-upgrade disabled">Plan Aktif</span>
                                     @else
-                                        <a href="/payment/{{ auth()->user()->id }}?plan=profesional" class="btn-upgrade">Upgrade</a>
+                                        <a href="{{ route('payment.upgrade', 'profesional') }}" class="btn-upgrade">Upgrade</a>
                                     @endif
                                 </div>
                             </div>

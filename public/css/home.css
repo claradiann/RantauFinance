@@ -467,3 +467,24 @@ body {
     .footer-bottom { flex-direction: column; gap: 0.75rem; text-align: center; }
     .floating-badge { display: none; }
 }
+
+/* Mobile Header Fixes */
+@media (max-width: 768px) {
+    .navbar { padding: 0.75rem 1rem !important; }
+    .navbar.scrolled { padding: 0.5rem 1rem !important; }
+    .nav-logo { font-size: 1.2rem !important; }
+    .nav-logo img { height: 28px !important; }
+    .nav-cta { gap: 0.5rem !important; }
+    .nav-cta .btn-primary-custom, .nav-cta .btn-outline-custom { 
+        padding: 0.5rem 0.85rem !important; 
+        font-size: 0.85rem !important; 
+    }
+}
+@media (max-width: 380px) {
+    .nav-logo { font-size: 1.05rem !important; }
+    .nav-logo img { height: 24px !important; }
+    .nav-cta .btn-primary-custom, .nav-cta .btn-outline-custom { 
+        padding: 0.4rem 0.6rem !important; 
+        font-size: 0.75rem !important; 
+    }
+}

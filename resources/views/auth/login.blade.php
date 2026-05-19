@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Masuk — Rantau Finance</title>
+    <link rel="icon" type="image/png" href="{{ asset('images/logo_RD.png') }}">
     <link rel="stylesheet" href="{{ asset('css/auth.css') }}">
 </head>
 <body>
@@ -13,7 +14,7 @@
     <div class="auth-brand">
         <div class="brand-content">
             <div class="brand-logo">
-                <span>💰</span> RantauFinance
+                <img src="{{ asset('images/logo_RD.png') }}" style="height: 54px; margin-right: 8px;"> RantauFinance
             </div>
             <h2>Kelola keuanganmu dengan lebih cerdas</h2>
             <p>Platform manajemen keuangan bulanan yang intuitif untuk memantau pemasukan, pengeluaran, dan mencapai tujuan finansialmu.</p>
@@ -43,7 +44,7 @@
     <div class="auth-form-panel">
         <div class="auth-form-wrapper">
             <div class="auth-form-header">
-                <div class="mobile-logo">💰 RantauFinance</div>
+                <div class="mobile-logo" style="display:flex;align-items:center;justify-content:center;gap:8px;"><img src="{{ asset('images/logo_RD.png') }}" style="height: 54px;"> RantauFinance</div>
                 <h1>Selamat Datang! 👋</h1>
                 <p>Masuk ke akunmu untuk melanjutkan</p>
             </div>
@@ -76,7 +77,7 @@
                     <label class="form-label" for="password">Password</label>
                     <div class="input-icon-wrapper">
                         <span class="input-icon">🔒</span>
-                        <input type="password" id="password" name="password" class="form-input"
+                        <input type="password" id="password" name="password" class="form-input {{ $errors->has('password') ? 'error' : '' }}"
                                placeholder="Masukkan password" required>
                         <button type="button" class="toggle-password" onclick="togglePw()">👁️</button>
                     </div>
@@ -90,7 +91,7 @@
                 </div>
 
                 <button type="submit" class="btn-submit">
-                    Masuk →
+                    Masuk
                 </button>
             </form>
 

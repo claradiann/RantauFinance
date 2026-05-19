@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Session;
 
 class PaymentController extends Controller
 {
@@ -23,7 +24,7 @@ class PaymentController extends Controller
             return redirect()->back()->with('error', 'Plan tidak valid.');
         }
 
-        session(['target_plan' => $plan]);
+        Session::put('target_plan', $plan);
         return redirect()->route('payment.show');
     }
 
@@ -39,10 +40,10 @@ class PaymentController extends Controller
             $user = Auth::user();
 
             // Tentukan plan target (jika upgrade, ambil dari session. Jika registrasi baru tapi sudah login, ambil dari user->plan)
-            $targetPlan = session('target_plan') ?: $user->plan;
+            $targetPlan = Session::get('target_plan') ?: $user->plan;
 
             // Jika user active dan tidak sedang upgrade, arahkan ke dashboard
-            if ($user->status === 'active' && !session('target_plan')) {
+            if ($user->status === 'active' && !Session::has('target_plan')) {
                 return redirect()->route('dashboard');
             }
 
@@ -61,7 +62,7 @@ class PaymentController extends Controller
         }
 
         // 2. Kasus pendaftaran baru (Guest): Ambil data dari session
-        $pending = session('pending_registration');
+        $pending = Session::get('pending_registration');
 
         if (!$pending) {
             return redirect()->route('register')->with('error', 'Silakan isi data pendaftaran terlebih dahulu.');
@@ -83,10 +84,10 @@ class PaymentController extends Controller
         // 1. Tentukan konteks: Login (Pending/Upgrade) atau Pendaftaran Baru (session)
         if (Auth::check()) {
             $user = Auth::user();
-            $plan = session('target_plan') ?: $user->plan;
+            $plan = Session::get('target_plan') ?: $user->plan;
             $pending = null;
         } else {
-            $pending = session('pending_registration');
+            $pending = Session::get('pending_registration');
             if (!$pending) {
                 return redirect()->route('register')->with('error', 'Sesi pendaftaran berakhir. Silakan daftar ulang.');
             }
@@ -102,8 +103,9 @@ class PaymentController extends Controller
         return DB::transaction(function () use ($request, $pending, $user, $plan) {
             // Jika pendaftaran baru, buat user-nya dulu
             if (!$user) {
+                /** @var array $pending */
                 if (User::where('email', $pending['email'])->exists()) {
-                    session()->forget('pending_registration');
+                    Session::forget('pending_registration');
                     return redirect()->route('register')->with('error', 'Email sudah terdaftar. Silakan login.');
                 }
 
@@ -115,7 +117,7 @@ class PaymentController extends Controller
                     'status'   => 'active',  // Langsung aktif
                 ]);
 
-                session()->forget('pending_registration');
+                Session::forget('pending_registration');
                 Auth::login($user);
             }
 
@@ -136,7 +138,7 @@ class PaymentController extends Controller
             ]);
 
             // Bersihkan session target_plan jika ada
-            session()->forget('target_plan');
+            Session::forget('target_plan');
 
             return redirect()->to(URL::signedRoute('payment.status', ['user' => $user->id]))
                 ->with('success', 'Bukti pembayaran berhasil dikirim! Admin akan memverifikasi pembayaran kamu.');

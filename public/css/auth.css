@@ -241,6 +241,11 @@ body {
     .auth-form-header .mobile-logo { display: block; }
 }
 
+/* Mobile Logo Fixes */
+@media (max-width: 768px) {
+    .mobile-logo img { height: 32px !important; }
+    .mobile-logo { font-size: 1.25rem !important; }
+}
 /* ===== ANIMATIONS ===== */
 @keyframes slideUp {
     from { opacity: 0; transform: translateY(20px); }

@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Detail Pembayaran #{{ $payment->id }} — Admin RantauFinance</title>
+    <link rel="icon" type="image/png" href="{{ asset('images/logo_RD.png') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
@@ -14,7 +15,7 @@
 <aside class="sidebar">
     <div class="sidebar-logo">
         <div>
-            💰 RantauFinance
+            <img src="{{ asset('images/logo_RD.png') }}" style="height: 48px; vertical-align: middle;"> RantauFinance
             <span class="admin-badge">Admin Panel</span>
         </div>
     </div>
@@ -155,15 +156,15 @@
                 <div class="card-body">
                     <p style="font-size:0.875rem;color:var(--gray-2);margin-bottom:1rem;">
                         Pastikan bukti transfer sudah sesuai sebelum mengkonfirmasi.
-                        Setelah dikonfirmasi, password akan otomatis dikirim ke email user.
+                        Setelah dikonfirmasi, akun user akan langsung aktif dengan plan baru mereka.
                     </p>
                     <div class="action-buttons">
                         {{-- Konfirmasi --}}
                         <form method="POST" action="{{ route('admin.payment.confirm', $payment->id) }}"
-                              onsubmit="return confirm('Konfirmasi pembayaran ini? Password akan dikirim ke {{ $payment->user->email }}')">
+                              onsubmit="return confirm('Konfirmasi pembayaran ini dan aktifkan plan user?')">
                             @csrf
                             <button type="submit" class="btn btn-success">
-                                ✅ Konfirmasi & Kirim Password
+                                ✅ Konfirmasi & Aktifkan Plan
                             </button>
                         </form>
 
@@ -251,3 +252,4 @@ document.getElementById('rejectModal').addEventListener('click', function(e) {
 
 </body>
 </html>
+

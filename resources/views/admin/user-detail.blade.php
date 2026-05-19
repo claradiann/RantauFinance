@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Detail User: {{ $user->name }} — Admin RantauFinance</title>
+    <link rel="icon" type="image/png" href="{{ asset('images/logo_RD.png') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
@@ -13,7 +14,7 @@
 <aside class="sidebar">
     <div class="sidebar-logo">
         <div>
-            💰 RantauFinance
+            <img src="{{ asset('images/logo_RD.png') }}" style="height: 48px; vertical-align: middle;"> RantauFinance
             <span class="admin-badge">Admin Panel</span>
         </div>
     </div>
@@ -131,7 +132,10 @@
                         {{-- Ubah Plan --}}
                         <button type="button"
                             class="btn btn-primary"
-                            onclick="openPlanModal({{ $user->id }}, '{{ $user->name }}', '{{ $user->plan }}')">
+                            id="btnUbahPlan"
+                            data-id="{{ $user->id }}"
+                            data-name="{{ $user->name }}"
+                            data-plan="{{ $user->plan }}">
                             ✏️ Ubah Plan
                         </button>
 
@@ -284,6 +288,13 @@ function closePlanModal() {
     document.getElementById('planModal').classList.remove('show');
 }
 
+document.getElementById('btnUbahPlan').addEventListener('click', function() {
+    const userId = this.getAttribute('data-id');
+    const userName = this.getAttribute('data-name');
+    const currentPlan = this.getAttribute('data-plan');
+    openPlanModal(userId, userName, currentPlan);
+});
+
 document.getElementById('planModalSelect').addEventListener('change', function () {
     const expiry = document.getElementById('planModalExpiry');
     if (this.value === 'starter') {
@@ -306,3 +317,4 @@ document.getElementById('planModal').addEventListener('click', function (e) {
 
 </body>
 </html>
+

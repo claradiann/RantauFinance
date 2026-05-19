@@ -19,6 +19,10 @@ Route::get('/', function () {
     return view('home');
 });
 
+Route::get('/tentang-kami', function () {
+    return view('about');
+})->name('about');
+
 /*
 |--------------------------------------------------------------------------
 | AUTH (BREEZE)

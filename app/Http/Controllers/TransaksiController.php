@@ -60,7 +60,7 @@ class TransaksiController extends Controller
             ->orderBy('tanggal', 'desc')
             ->get();
 
-        $filename = "transaksi_" . date('Y-m-d') . ".csv";
+        $filename = "transaksi_" . \Carbon\Carbon::now()->setTimezone('Asia/Jakarta')->format('Y-m-d') . ".csv";
         
         return response()->streamDownload(function() use ($transaksi) {
             $handle = fopen('php://output', 'w');
@@ -91,7 +91,7 @@ class TransaksiController extends Controller
             ->get();
 
         $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('transaksi.pdf', compact('transaksi', 'user'));
-        return $pdf->download('laporan_transaksi_' . date('Y-m-d') . '.pdf');
+        return $pdf->download('laporan_transaksi_' . \Carbon\Carbon::now()->setTimezone('Asia/Jakarta')->format('Y-m-d') . '.pdf');
     }
 
     public function create()
