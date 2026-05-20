@@ -195,7 +195,7 @@
             <div class="team-card">
                 <div class="team-avatar" style="position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center;">
                     <span style="position: absolute; z-index: 1;">CD</span>
-                    <img src="{{ asset('images/clara.jpg') }}" alt="Clara Dian Ajeng Saputri" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 2;" onerror="this.style.display='none'">
+                    <img src="{{ asset('images/foto_clara.jpeg') }}" alt="Clara Dian Ajeng Saputri" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 20%; z-index: 2;" onerror="this.style.display='none'">
                 </div>
                 <h4>Clara Dian Ajeng Saputri</h4>
                 <p>Co-Founder & Creator</p>

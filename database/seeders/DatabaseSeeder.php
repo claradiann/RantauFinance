@@ -43,7 +43,7 @@ class DatabaseSeeder extends Seeder
         // ADMIN
         User::firstOrCreate(['email' => 'admin@rantaufinance.com'], [
             'name'     => 'Admin',
-            'password' => Hash::make('adminpassword123'),
+            'password' => Hash::make('jdnjcunububcjnsjbyybs'),
             'plan'     => 'starter', // Admin use starter plan or similar
             'status'   => 'active',
             'is_admin' => true,
