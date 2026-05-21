@@ -7,12 +7,32 @@
     <link rel="icon" type="image/png" href="{{ asset('images/logo_RD.png') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/admin.css') }}?v=1.3">
+    <style>
+        /* Prevent layout issues if CSS is cached */
+        .mobile-header { display: none; }
+        @media (max-width: 768px) {
+            .mobile-header { display: flex; }
+        }
+    </style>
 </head>
 <body>
 
+{{-- Mobile Header --}}
+<div class="mobile-header">
+    <div class="mobile-header-brand">
+        <img src="{{ asset('images/logo_RD.png') }}" alt="Logo" style="height: 32px;"> RantauFinance
+        <span class="admin-badge">Admin</span>
+    </div>
+    <button class="menu-toggle" id="menuToggleBtn">☰</button>
+</div>
+
+{{-- Sidebar Overlay --}}
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
 {{-- Sidebar --}}
 <aside class="sidebar">
+    <button class="sidebar-close" id="sidebarCloseBtn">&times;</button>
     <div class="sidebar-logo">
         <div>
             <img src="{{ asset('images/logo_RD.png') }}" style="height: 48px; vertical-align: middle;"> RantauFinance
@@ -247,6 +267,33 @@ function hideRejectModal() { document.getElementById('rejectModal').classList.re
 // Tutup modal saat klik backdrop
 document.getElementById('rejectModal').addEventListener('click', function(e) {
     if (e.target === this) hideRejectModal();
+});
+</script>
+
+{{-- Mobile Nav Toggle Script --}}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const sidebar = document.querySelector('.sidebar');
+    const menuToggleBtn = document.getElementById('menuToggleBtn');
+    const sidebarCloseBtn = document.getElementById('sidebarCloseBtn');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+    if (menuToggleBtn && sidebar && sidebarOverlay) {
+        menuToggleBtn.addEventListener('click', function() {
+            sidebar.classList.add('open');
+            sidebarOverlay.classList.add('show');
+        });
+    }
+
+    function closeSidebar() {
+        if (sidebar && sidebarOverlay) {
+            sidebar.classList.remove('open');
+            sidebarOverlay.classList.remove('show');
+        }
+    }
+
+    if (sidebarCloseBtn) sidebarCloseBtn.addEventListener('click', closeSidebar);
+    if (sidebarOverlay) sidebarOverlay.addEventListener('click', closeSidebar);
 });
 </script>
 

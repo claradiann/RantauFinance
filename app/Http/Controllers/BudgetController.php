@@ -44,9 +44,14 @@ class BudgetController extends Controller
     {
         $request->validate([
             'kategori_id' => 'required|exists:kategori,id',
-            'jumlah'      => 'required|numeric|min:1',
+            'jumlah'      => 'required|numeric|min:1|max:9999999999.99',
             'bulan'       => 'required|integer|min:1|max:12',
             'tahun'       => 'required|integer|min:2000',
+        ], [
+            'jumlah.required' => 'Jumlah budget wajib diisi.',
+            'jumlah.numeric'  => 'Jumlah budget harus berupa angka.',
+            'jumlah.min'      => 'Jumlah budget minimal adalah 1.',
+            'jumlah.max'      => 'Jumlah budget tidak boleh lebih dari 9.999.999.999,99.',
         ]);
 
         Budget::updateOrCreate(
@@ -62,7 +67,7 @@ class BudgetController extends Controller
         return redirect('/budget')->with('success', 'Budget berhasil disimpan!');
     }
 
-    public function destroy($id)
+    public function destroy(int $id)
     {
         $budget = Budget::where('id', $id)->where('user_id', Auth::id())->firstOrFail();
         $budget->delete();

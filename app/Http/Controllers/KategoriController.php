@@ -10,8 +10,25 @@ class KategoriController extends Controller
 {
     public function index()
     {
-        $pemasukan   = Kategori::where('tipe', 'pemasukan')->get();
-        $pengeluaran = Kategori::where('tipe', 'pengeluaran')->get();
+        $userId = Auth::id();
+
+        $pemasukan = Kategori::where('tipe', 'pemasukan')
+            ->withCount([
+                'transaksi as user_transaksi_count' => function ($query) use ($userId) {
+                    $query->where('user_id', $userId);
+                },
+                'transaksi as total_transaksi_count'
+            ])
+            ->get();
+
+        $pengeluaran = Kategori::where('tipe', 'pengeluaran')
+            ->withCount([
+                'transaksi as user_transaksi_count' => function ($query) use ($userId) {
+                    $query->where('user_id', $userId);
+                },
+                'transaksi as total_transaksi_count'
+            ])
+            ->get();
 
         return view('kategori.index', compact('pemasukan', 'pengeluaran'));
     }

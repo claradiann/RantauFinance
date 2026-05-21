@@ -7,7 +7,7 @@
     <link rel="icon" type="image/png" href="{{ asset('images/logo_RD.png') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}?v=1.3">
     <style>
         /* ===== Form Styles ===== */
         .form-card {
@@ -119,6 +119,25 @@
         }
         @media (max-width: 480px) {
             .form-row { grid-template-columns: 1fr; }
+            .form-card-body {
+                padding: 1.25rem 1rem;
+            }
+            .form-card-header {
+                padding: 1.25rem 1rem;
+            }
+            .form-actions {
+                flex-direction: column-reverse;
+                gap: 0.5rem;
+            }
+            .btn-submit, .btn-cancel {
+                width: 100%;
+                text-align: center;
+                justify-content: center;
+            }
+            .type-pill {
+                padding: 0.65rem 0.5rem;
+                font-size: 0.8rem;
+            }
         }
 
         /* Submit buttons */

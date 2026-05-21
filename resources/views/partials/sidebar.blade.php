@@ -196,5 +196,48 @@ function showUpgradeToast(featureName, minPlan) {
     clearTimeout(window._upgradeToastTimer);
     window._upgradeToastTimer = setTimeout(() => toast.classList.remove('show'), 4000);
 }
+
+// Fallback toggleSidebar function jika belum didefinisikan oleh page
+if (typeof toggleSidebar !== 'function') {
+    window.toggleSidebar = function() {
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+        if (sidebar) sidebar.classList.toggle('open');
+        if (overlay) overlay.classList.toggle('open');
+    };
+}
 </script>
+
+{{-- Mobile Bottom Navigation Bar --}}
+<nav class="mobile-bottom-nav">
+    <a href="/dashboard" class="bottom-nav-item {{ $currentActive === 'dashboard' ? 'active' : '' }}">
+        <span class="bottom-nav-icon">📊</span>
+        <span>Dashboard</span>
+    </a>
+    <a href="/transaksi" class="bottom-nav-item {{ $currentActive === 'transaksi' ? 'active' : '' }}">
+        <span class="bottom-nav-icon">💳</span>
+        <span>Transaksi</span>
+    </a>
+    <a href="/transaksi/create" class="bottom-nav-item floating-action {{ $currentActive === 'create' ? 'active' : '' }}" title="Tambah Transaksi">
+        <span class="bottom-nav-icon">➕</span>
+    </a>
+    @php
+        $hasBudgetAccess = auth()->user()->canAccess('budget_planner');
+    @endphp
+    @if($hasBudgetAccess)
+        <a href="/budget" class="bottom-nav-item {{ $currentActive === 'budget' ? 'active' : '' }}">
+            <span class="bottom-nav-icon">🎯</span>
+            <span>Budget</span>
+        </a>
+    @else
+        <button type="button" class="bottom-nav-item" onclick="showUpgradeToast('Budget', 'Personal')">
+            <span class="bottom-nav-icon">🔒</span>
+            <span>Budget</span>
+        </button>
+    @endif
+    <button type="button" class="bottom-nav-item" onclick="toggleSidebar()">
+        <span class="bottom-nav-icon">⋯</span>
+        <span>Lainnya</span>
+    </button>
+</nav>
 

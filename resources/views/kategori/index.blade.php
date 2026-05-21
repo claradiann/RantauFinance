@@ -6,7 +6,7 @@
     <title>Kategori — Rantau Finance</title>
     <link rel="icon" type="image/png" href="{{ asset('images/logo_RD.png') }}">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}?v=1.3">
     <style>
         .kategori-grid {
             display: grid;
@@ -173,6 +173,16 @@
         }
         .type-pill.active-income  { border-color: #10b981; background: #d1fae5; color: #065f46; }
         .type-pill.active-expense { border-color: #ef4444; background: #fee2e2; color: #991b1b; }
+
+        @media (max-width: 480px) {
+            .form-card {
+                padding: 1.25rem 1rem;
+            }
+            .type-pill {
+                padding: 0.6rem 0.5rem;
+                font-size: 0.8rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -220,7 +230,7 @@
                                     <div class="kategori-dot income"></div>
                                     <div>
                                         <div class="kategori-name">{{ $k->nama }}</div>
-                                        <div class="kategori-count">{{ $k->transaksi->count() }} transaksi</div>
+                                        <div class="kategori-count">{{ $k->user_transaksi_count }} transaksi</div>
                                     </div>
                                 </div>
                                 @if(auth()->user()->canAccess('kategori_custom_unlimited'))
@@ -228,7 +238,7 @@
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn-delete"
-                                        {{ $k->transaksi->count() > 0 ? 'disabled title=Tidak bisa dihapus, masih digunakan' : 'onclick=return confirm(\'Hapus kategori ini?\')' }}>
+                                        {{ $k->total_transaksi_count > 0 ? 'disabled title=Tidak bisa dihapus, masih digunakan' : 'onclick=return confirm(\'Hapus kategori ini?\')' }}>
                                         🗑
                                     </button>
                                 </form>
@@ -250,7 +260,7 @@
                                     <div class="kategori-dot expense"></div>
                                     <div>
                                         <div class="kategori-name">{{ $k->nama }}</div>
-                                        <div class="kategori-count">{{ $k->transaksi->count() }} transaksi</div>
+                                        <div class="kategori-count">{{ $k->user_transaksi_count }} transaksi</div>
                                     </div>
                                 </div>
                                 @if(auth()->user()->canAccess('kategori_custom_unlimited'))
@@ -258,7 +268,7 @@
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn-delete"
-                                        {{ $k->transaksi->count() > 0 ? 'disabled title=Tidak bisa dihapus, masih digunakan' : 'onclick=return confirm(\'Hapus kategori ini?\')' }}>
+                                        {{ $k->total_transaksi_count > 0 ? 'disabled title=Tidak bisa dihapus, masih digunakan' : 'onclick=return confirm(\'Hapus kategori ini?\')' }}>
                                         🗑
                                     </button>
                                 </form>

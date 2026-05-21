@@ -105,8 +105,13 @@ class TransaksiController extends Controller
     {
         $request->validate([
             'kategori_id' => 'required|exists:kategori,id',
-            'jumlah' => 'required|numeric|min:1',
+            'jumlah' => 'required|numeric|min:1|max:9999999999.99',
             'tanggal' => 'required|date',
+        ], [
+            'jumlah.required' => 'Jumlah transaksi wajib diisi.',
+            'jumlah.numeric'  => 'Jumlah transaksi harus berupa angka.',
+            'jumlah.min'      => 'Jumlah transaksi minimal adalah 1.',
+            'jumlah.max'      => 'Jumlah transaksi tidak boleh lebih dari 9.999.999.999,99.',
         ]);
 
         Transaksi::create([
@@ -142,8 +147,13 @@ class TransaksiController extends Controller
 
         $request->validate([
             'kategori_id' => 'required|exists:kategori,id',
-            'jumlah' => 'required|numeric|min:1',
+            'jumlah' => 'required|numeric|min:1|max:9999999999.99',
             'tanggal' => 'required|date',
+        ], [
+            'jumlah.required' => 'Jumlah transaksi wajib diisi.',
+            'jumlah.numeric'  => 'Jumlah transaksi harus berupa angka.',
+            'jumlah.min'      => 'Jumlah transaksi minimal adalah 1.',
+            'jumlah.max'      => 'Jumlah transaksi tidak boleh lebih dari 9.999.999.999,99.',
         ]);
 
         $transaksi->update([

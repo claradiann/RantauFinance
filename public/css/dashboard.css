@@ -44,7 +44,7 @@ body { font-family: 'Inter', sans-serif; background: var(--light); color: var(--
     width: var(--sidebar-w); background: var(--white);
     border-right: 1px solid var(--border);
     padding: 1.5rem 0; display: flex; flex-direction: column;
-    position: fixed; top: 0; left: 0; bottom: 0; z-index: 100;
+    position: fixed; top: 0; left: 0; bottom: 0; z-index: 200;
     transition: transform 0.3s ease;
 }
 .sidebar-logo {
@@ -364,7 +364,7 @@ body { font-family: 'Inter', sans-serif; background: var(--light); color: var(--
 }
 .sidebar-overlay {
     display: none; position: fixed; inset: 0;
-    background: rgba(0,0,0,0.4); z-index: 99;
+    background: rgba(0,0,0,0.4); z-index: 190;
 }
 
 @media (max-width: 1024px) {
@@ -389,6 +389,101 @@ body { font-family: 'Inter', sans-serif; background: var(--light); color: var(--
 
 /* Mobile Dashboard Fixes */
 @media (max-width: 768px) {
+
+    .mobile-header {
+        justify-content: flex-start !important;
+    }
+    .mobile-header .menu-toggle {
+        display: none !important;
+    }
+    .mobile-header div[style*="width:40px"],
+    .mobile-header div[style*="width: 40px"] {
+        display: none !important;
+    }
     .mobile-header img { height: 28px !important; }
     .mobile-header span { font-size: 1.2rem !important; }
+    .main-content {
+        padding-bottom: 5.5rem !important;
+    }
+}
+
+/* ===== MOBILE BOTTOM NAVIGATION ===== */
+.mobile-bottom-nav {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 64px;
+    background: var(--white);
+    border-top: 1px solid var(--border);
+    box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.06);
+    z-index: 130;
+    justify-content: space-around;
+    align-items: center;
+    padding: 0 0.25rem;
+}
+
+.bottom-nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    height: 100%;
+    color: var(--gray);
+    text-decoration: none;
+    font-size: 0.75rem;
+    font-weight: 600;
+    gap: 2px;
+    transition: all 0.2s;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    padding: 0;
+}
+
+.bottom-nav-item:hover,
+.bottom-nav-item.active {
+    color: var(--primary);
+}
+
+.bottom-nav-icon {
+    font-size: 1.35rem;
+    line-height: 1;
+}
+
+/* Floating Action Button for Tambah Transaksi */
+.bottom-nav-item.floating-action {
+    position: relative;
+    top: -12px;
+    height: 54px;
+    max-width: 54px;
+    background: var(--gradient-1);
+    color: white !important;
+    border-radius: 50%;
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 140;
+    flex: none;
+    width: 54px;
+}
+
+.bottom-nav-item.floating-action:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.45);
+}
+
+.bottom-nav-item.floating-action .bottom-nav-icon {
+    font-size: 1.45rem;
+    color: white;
+}
+
+@media (max-width: 768px) {
+    .mobile-bottom-nav {
+        display: flex;
+    }
 }
