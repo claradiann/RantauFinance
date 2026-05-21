@@ -7,12 +7,32 @@
     <link rel="icon" type="image/png" href="{{ asset('images/logo_RD.png') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/admin.css') }}?v=1.3">
+    <style>
+        /* Prevent layout issues if CSS is cached */
+        .mobile-header { display: none; }
+        @media (max-width: 768px) {
+            .mobile-header { display: flex; }
+        }
+    </style>
 </head>
 <body>
 
+{{-- Mobile Header --}}
+<div class="mobile-header">
+    <div class="mobile-header-brand">
+        <img src="{{ asset('images/logo_RD.png') }}" alt="Logo" style="height: 32px;"> RantauFinance
+        <span class="admin-badge">Admin</span>
+    </div>
+    <button class="menu-toggle" id="menuToggleBtn">☰</button>
+</div>
+
+{{-- Sidebar Overlay --}}
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
 {{-- Sidebar --}}
 <aside class="sidebar">
+    <button class="sidebar-close" id="sidebarCloseBtn">&times;</button>
     <div class="sidebar-logo">
         <div>
             <img src="{{ asset('images/logo_RD.png') }}" style="height: 48px; vertical-align: middle;"> RantauFinance
@@ -106,44 +126,46 @@
                 <p>Tidak ada pembayaran yang menunggu konfirmasi.</p>
             </div>
         @else
-            <table>
-                <thead>
-                    <tr>
-                        <th>User</th>
-                        <th>Paket</th>
-                        <th>Nominal</th>
-                        <th>Metode</th>
-                        <th>Dikirim</th>
-                        <th>Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($pendingPayments as $payment)
-                    <tr>
-                        <td>
-                            <div style="font-weight:600;">{{ $payment->user->name }}</div>
-                            <div style="color:var(--gray);font-size:0.8rem;">{{ $payment->user->email }}</div>
-                        </td>
-                        <td>
-                            <span class="badge-plan {{ $payment->plan }}">
-                                {{ $payment->plan === 'admin' ? '🔵' : '🟣' }}
-                                {{ $payment->planLabel() }}
-                            </span>
-                        </td>
-                        <td style="font-weight:700;color:var(--primary);">{{ $payment->nominalFormatted() }}</td>
-                        <td style="text-transform:capitalize;">
-                            {{ $payment->metode === 'qris' ? '📱 QRIS' : '🏦 Transfer' }}
-                        </td>
-                        <td style="color:var(--gray-2);">{{ $payment->created_at->diffForHumans() }}</td>
-                        <td>
-                            <a href="{{ route('admin.payment.detail', $payment->id) }}" class="btn btn-primary">
-                                👁 Lihat
-                            </a>
-                        </td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
+            <div class="table-responsive" style="width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch;">
+                <table style="min-width: 750px; width: 100%;">
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Paket</th>
+                            <th>Nominal</th>
+                            <th>Metode</th>
+                            <th>Dikirim</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($pendingPayments as $payment)
+                        <tr>
+                            <td>
+                                <div style="font-weight:600;">{{ $payment->user->name }}</div>
+                                <div style="color:var(--gray);font-size:0.8rem;">{{ $payment->user->email }}</div>
+                            </td>
+                            <td>
+                                <span class="badge-plan {{ $payment->plan }}">
+                                    {{ $payment->plan === 'admin' ? '🔵' : '🟣' }}
+                                    {{ $payment->planLabel() }}
+                                </span>
+                            </td>
+                            <td style="font-weight:700;color:var(--primary);">{{ $payment->nominalFormatted() }}</td>
+                            <td style="text-transform:capitalize;">
+                                {{ $payment->metode === 'qris' ? '📱 QRIS' : '🏦 Transfer' }}
+                            </td>
+                            <td style="color:var(--gray-2);">{{ $payment->created_at->diffForHumans() }}</td>
+                            <td>
+                                <a href="{{ route('admin.payment.detail', $payment->id) }}" class="btn btn-primary">
+                                    👁 Lihat
+                                </a>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
             <div class="pagination-wrap">{{ $pendingPayments->links() }}</div>
         @endif
     </div>
@@ -154,37 +176,66 @@
         <div class="card-header">
             <h2>✅ Baru Dikonfirmasi</h2>
         </div>
-        <table>
-            <thead>
-                <tr>
-                    <th>User</th>
-                    <th>Paket</th>
-                    <th>Nominal</th>
-                    <th>Dikonfirmasi</th>
-                    <th>Oleh</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($recentConfirmed as $payment)
-                <tr>
-                    <td>
-                        <div style="font-weight:600;">{{ $payment->user->name }}</div>
-                        <div style="color:var(--gray);font-size:0.8rem;">{{ $payment->user->email }}</div>
-                    </td>
-                    <td>
-                        <span class="badge-plan {{ $payment->plan }}">{{ $payment->planLabel() }}</span>
-                    </td>
-                    <td style="font-weight:700;">{{ $payment->nominalFormatted() }}</td>
-                    <td style="color:var(--gray-2);">{{ $payment->confirmed_at->diffForHumans() }}</td>
-                    <td style="color:var(--gray-2);">{{ $payment->confirmedBy?->name ?? '-' }}</td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
+        <div class="table-responsive" style="width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch;">
+            <table style="min-width: 700px; width: 100%;">
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Paket</th>
+                        <th>Nominal</th>
+                        <th>Dikonfirmasi</th>
+                        <th>Oleh</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($recentConfirmed as $payment)
+                    <tr>
+                        <td>
+                            <div style="font-weight:600;">{{ $payment->user->name }}</div>
+                            <div style="color:var(--gray);font-size:0.8rem;">{{ $payment->user->email }}</div>
+                        </td>
+                        <td>
+                            <span class="badge-plan {{ $payment->plan }}">{{ $payment->planLabel() }}</span>
+                        </td>
+                        <td style="font-weight:700;">{{ $payment->nominalFormatted() }}</td>
+                        <td style="color:var(--gray-2);">{{ $payment->confirmed_at->diffForHumans() }}</td>
+                        <td style="color:var(--gray-2);">{{ $payment->confirmedBy?->name ?? '-' }}</td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
     </div>
     @endif
 
 </main>
+
+{{-- Mobile Nav Toggle Script --}}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const sidebar = document.querySelector('.sidebar');
+    const menuToggleBtn = document.getElementById('menuToggleBtn');
+    const sidebarCloseBtn = document.getElementById('sidebarCloseBtn');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+    if (menuToggleBtn && sidebar && sidebarOverlay) {
+        menuToggleBtn.addEventListener('click', function() {
+            sidebar.classList.add('open');
+            sidebarOverlay.classList.add('show');
+        });
+    }
+
+    function closeSidebar() {
+        if (sidebar && sidebarOverlay) {
+            sidebar.classList.remove('open');
+            sidebarOverlay.classList.remove('show');
+        }
+    }
+
+    if (sidebarCloseBtn) sidebarCloseBtn.addEventListener('click', closeSidebar);
+    if (sidebarOverlay) sidebarOverlay.addEventListener('click', closeSidebar);
+});
+</script>
 
 </body>
 </html>

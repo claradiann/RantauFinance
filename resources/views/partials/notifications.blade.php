@@ -99,6 +99,18 @@
     .notif-empty { padding: 3rem 1.5rem; text-align: center; color: var(--gray); }
     .notif-empty .empty-icon { font-size: 2.5rem; margin-bottom: 0.75rem; opacity: 0.3; }
     .notif-empty p { font-size: 0.85rem; margin: 0; }
+
+    @media (max-width: 480px) {
+        .notif-dropdown {
+            position: fixed;
+            top: 75px;
+            left: 16px;
+            right: 16px;
+            width: auto;
+            max-width: none;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+    }
 </style>
 
 <script>

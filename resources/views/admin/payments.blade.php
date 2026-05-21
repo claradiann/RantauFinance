@@ -7,11 +7,32 @@
     <link rel="icon" type="image/png" href="{{ asset('images/logo_RD.png') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/admin.css') }}?v=1.3">
+    <style>
+        /* Prevent layout issues if CSS is cached */
+        .mobile-header { display: none; }
+        @media (max-width: 768px) {
+            .mobile-header { display: flex; }
+        }
+    </style>
 </head>
 <body>
 
+{{-- Mobile Header --}}
+<div class="mobile-header">
+    <div class="mobile-header-brand">
+        <img src="{{ asset('images/logo_RD.png') }}" alt="Logo" style="height: 32px;"> RantauFinance
+        <span class="admin-badge">Admin</span>
+    </div>
+    <button class="menu-toggle" id="menuToggleBtn">☰</button>
+</div>
+
+{{-- Sidebar Overlay --}}
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+{{-- Sidebar --}}
 <aside class="sidebar">
+    <button class="sidebar-close" id="sidebarCloseBtn">&times;</button>
     <div class="sidebar-logo">
         <div>
             <img src="{{ asset('images/logo_RD.png') }}" style="height: 48px; vertical-align: middle;"> RantauFinance
@@ -129,71 +150,100 @@
                 <p>Tidak ada payment yang cocok dengan filter.</p>
             </div>
         @else
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>User</th>
-                        <th>Paket</th>
-                        <th>Nominal</th>
-                        <th>Metode</th>
-                        <th>Status</th>
-                        <th>Tanggal</th>
-                        <th>Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($payments as $payment)
-                    <tr>
-                        <td style="font-weight:700;color:var(--gray-2);">#{{ $payment->id }}</td>
-                        <td>
-                            <div style="font-weight:600;">{{ $payment->user->name ?? '—' }}</div>
-                            <div style="color:var(--gray);font-size:0.78rem;">{{ $payment->user->email ?? '—' }}</div>
-                        </td>
-                        <td>
-                            <span class="badge-plan {{ $payment->plan }}">
-                                @if($payment->plan === 'personal') 🔵
-                                @elseif($payment->plan === 'profesional') 🟣
-                                @else ⚪ @endif
-                                {{ $payment->planLabel() }}
-                            </span>
-                        </td>
-                        <td style="font-weight:700;color:var(--primary);">{{ $payment->nominalFormatted() }}</td>
-                        <td style="text-transform:capitalize;">
-                            {{ $payment->metode === 'qris' ? '📱 QRIS' : '🏦 Transfer' }}
-                        </td>
-                        <td>
-                            <span class="badge-status {{ $payment->status }}">
-                                {{ $payment->statusLabel() }}
-                            </span>
-                        </td>
-                        <td style="color:var(--gray-2);font-size:0.8rem;">
-                            {{ $payment->created_at->format('d M Y') }}
-                            <div style="font-size:0.72rem;color:var(--gray);">{{ $payment->created_at->format('H:i') }}</div>
-                        </td>
-                        <td>
-                            <div class="btn-actions">
-                                <a href="{{ route('admin.payment.detail', $payment->id) }}" class="btn btn-sm btn-primary">
-                                    👁 Detail
-                                </a>
-                                @if($payment->isPending())
-                                    <form method="POST" action="{{ route('admin.payment.confirm', $payment->id) }}"
-                                          onsubmit="return confirm('Konfirmasi pembayaran #{{ $payment->id }}? Plan user akan diaktifkan.')">
-                                        @csrf
-                                        <button type="submit" class="btn btn-sm btn-success">✅ Konfirmasi</button>
-                                    </form>
-                                @endif
-                            </div>
-                        </td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
+            <div class="table-responsive" style="width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch;">
+                <table style="min-width: 900px; width: 100%;">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>User</th>
+                            <th>Paket</th>
+                            <th>Nominal</th>
+                            <th>Metode</th>
+                            <th>Status</th>
+                            <th>Tanggal</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($payments as $payment)
+                        <tr>
+                            <td style="font-weight:700;color:var(--gray-2);">#{{ $payment->id }}</td>
+                            <td>
+                                <div style="font-weight:600;">{{ $payment->user->name ?? '—' }}</div>
+                                <div style="color:var(--gray);font-size:0.78rem;">{{ $payment->user->email ?? '—' }}</div>
+                            </td>
+                            <td>
+                                <span class="badge-plan {{ $payment->plan }}">
+                                    @if($payment->plan === 'personal') 🔵
+                                    @elseif($payment->plan === 'profesional') 🟣
+                                    @else ⚪ @endif
+                                    {{ $payment->planLabel() }}
+                                </span>
+                            </td>
+                            <td style="font-weight:700;color:var(--primary);">{{ $payment->nominalFormatted() }}</td>
+                            <td style="text-transform:capitalize;">
+                                {{ $payment->metode === 'qris' ? '📱 QRIS' : '🏦 Transfer' }}
+                            </td>
+                            <td>
+                                <span class="badge-status {{ $payment->status }}">
+                                    {{ $payment->statusLabel() }}
+                                </span>
+                            </td>
+                            <td style="color:var(--gray-2);font-size:0.8rem;">
+                                {{ $payment->created_at->format('d M Y') }}
+                                <div style="font-size:0.72rem;color:var(--gray);">{{ $payment->created_at->format('H:i') }}</div>
+                            </td>
+                            <td>
+                                <div class="btn-actions">
+                                    <a href="{{ route('admin.payment.detail', $payment->id) }}" class="btn btn-sm btn-primary">
+                                        👁 Detail
+                                    </a>
+                                    @if($payment->isPending())
+                                        <form method="POST" action="{{ route('admin.payment.confirm', $payment->id) }}"
+                                              onsubmit="return confirm('Konfirmasi pembayaran #{{ $payment->id }}? Plan user akan diaktifkan.')">
+                                            @csrf
+                                            <button type="submit" class="btn btn-sm btn-success">✅ Konfirmasi</button>
+                                        </form>
+                                    @endif
+                                </div>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
             <div class="pagination-wrap">{{ $payments->withQueryString()->links() }}</div>
         @endif
     </div>
 
 </main>
+
+{{-- Mobile Nav Toggle Script --}}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const sidebar = document.querySelector('.sidebar');
+    const menuToggleBtn = document.getElementById('menuToggleBtn');
+    const sidebarCloseBtn = document.getElementById('sidebarCloseBtn');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+    if (menuToggleBtn && sidebar && sidebarOverlay) {
+        menuToggleBtn.addEventListener('click', function() {
+            sidebar.classList.add('open');
+            sidebarOverlay.classList.add('show');
+        });
+    }
+
+    function closeSidebar() {
+        if (sidebar && sidebarOverlay) {
+            sidebar.classList.remove('open');
+            sidebarOverlay.classList.remove('show');
+        }
+    }
+
+    if (sidebarCloseBtn) sidebarCloseBtn.addEventListener('click', closeSidebar);
+    if (sidebarOverlay) sidebarOverlay.addEventListener('click', closeSidebar);
+});
+</script>
 
 </body>
 </html>

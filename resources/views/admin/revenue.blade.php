@@ -7,12 +7,33 @@
     <link rel="icon" type="image/png" href="{{ asset('images/logo_RD.png') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/admin.css') }}?v=1.3">
+    <style>
+        /* Prevent layout issues if CSS is cached */
+        .mobile-header { display: none; }
+        @media (max-width: 768px) {
+            .mobile-header { display: flex; }
+        }
+    </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
 </head>
 <body>
 
+{{-- Mobile Header --}}
+<div class="mobile-header">
+    <div class="mobile-header-brand">
+        <img src="{{ asset('images/logo_RD.png') }}" alt="Logo" style="height: 32px;"> RantauFinance
+        <span class="admin-badge">Admin</span>
+    </div>
+    <button class="menu-toggle" id="menuToggleBtn">☰</button>
+</div>
+
+{{-- Sidebar Overlay --}}
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+{{-- Sidebar --}}
 <aside class="sidebar">
+    <button class="sidebar-close" id="sidebarCloseBtn">&times;</button>
     <div class="sidebar-logo">
         <div>
             <img src="{{ asset('images/logo_RD.png') }}" style="height: 48px; vertical-align: middle;"> RantauFinance
@@ -188,13 +209,19 @@
         </div>
     </div>
 
+    {{-- Data untuk Chart --}}
+    <script id="months-labels-data" type="application/json">{!! json_encode($months->pluck('bulan')) !!}</script>
+    <script id="months-totals-data" type="application/json">{!! json_encode($months->pluck('total')) !!}</script>
+    <script id="months-counts-data" type="application/json">{!! json_encode($months->pluck('jumlah')) !!}</script>
+    <script id="plan-personal-data" type="application/json">{{ $revenueByPlan['personal']->total ?? 0 }}</script>
+    <script id="plan-profesional-data" type="application/json">{{ $revenueByPlan['profesional']->total ?? 0 }}</script>
 </main>
 
 <script>
 // Data dari backend
-const monthLabels = @json($months->pluck('bulan'));
-const monthTotals = @json($months->pluck('total'));
-const monthCounts = @json($months->pluck('jumlah'));
+const monthLabels = JSON.parse(document.getElementById('months-labels-data').textContent);
+const monthTotals = JSON.parse(document.getElementById('months-totals-data').textContent);
+const monthCounts = JSON.parse(document.getElementById('months-counts-data').textContent);
 
 // Chart Revenue Bulanan — Bar + Line combo
 const ctx1 = document.getElementById('revenueChart').getContext('2d');
@@ -271,8 +298,8 @@ new Chart(ctx1, {
 });
 
 // Chart Revenue Per Plan — Doughnut
-const personalTotal  = {{ $revenueByPlan['personal']->total ?? 0 }};
-const profesionalTotal = {{ $revenueByPlan['profesional']->total ?? 0 }};
+const personalTotal  = parseFloat(document.getElementById('plan-personal-data').textContent);
+const profesionalTotal = parseFloat(document.getElementById('plan-profesional-data').textContent);
 
 const ctx2 = document.getElementById('planChart').getContext('2d');
 new Chart(ctx2, {
@@ -307,6 +334,33 @@ new Chart(ctx2, {
             }
         }
     }
+});
+</script>
+
+{{-- Mobile Nav Toggle Script --}}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const sidebar = document.querySelector('.sidebar');
+    const menuToggleBtn = document.getElementById('menuToggleBtn');
+    const sidebarCloseBtn = document.getElementById('sidebarCloseBtn');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+    if (menuToggleBtn && sidebar && sidebarOverlay) {
+        menuToggleBtn.addEventListener('click', function() {
+            sidebar.classList.add('open');
+            sidebarOverlay.classList.add('show');
+        });
+    }
+
+    function closeSidebar() {
+        if (sidebar && sidebarOverlay) {
+            sidebar.classList.remove('open');
+            sidebarOverlay.classList.remove('show');
+        }
+    }
+
+    if (sidebarCloseBtn) sidebarCloseBtn.addEventListener('click', closeSidebar);
+    if (sidebarOverlay) sidebarOverlay.addEventListener('click', closeSidebar);
 });
 </script>
 
