@@ -15,7 +15,46 @@
         @media (max-width: 768px) {
             .mobile-header { display: flex; }
         }
-        .pagination-wrap svg { width: 20px; height: 20px; }
+        /* Pagination Styles */
+        .pagination-wrap {
+            margin-top: 1.5rem;
+            display: flex;
+            justify-content: center;
+        }
+        .pagination {
+            display: flex;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            border-radius: var(--radius);
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+        .pagination .page-item .page-link {
+            padding: 0.5rem 1rem;
+            background: var(--white);
+            color: var(--text);
+            text-decoration: none;
+            border-right: 1px solid var(--border);
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        .pagination .page-item:last-child .page-link {
+            border-right: none;
+        }
+        .pagination .page-item.active .page-link {
+            background: var(--primary);
+            color: var(--white);
+        }
+        .pagination .page-item.disabled .page-link {
+            color: var(--gray);
+            cursor: not-allowed;
+            background: #f9fafb;
+        }
+        .pagination .page-item:not(.active):not(.disabled) .page-link:hover {
+            background: #f3f4f6;
+        }
     </style>
 </head>
 
@@ -209,7 +248,9 @@
                     </tbody>
                 </table>
             </div>
-            <div class="pagination-wrap">{{ $users->withQueryString()->links() }}</div>
+            <div class="pagination-wrap">
+                {{ $users->withQueryString()->links('pagination::bootstrap-4') }}
+            </div>
             @endif
         </div>
 
