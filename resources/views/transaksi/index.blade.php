@@ -8,6 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}?v=1.3">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         /* ===== Transaction Table Styles ===== */
         .filter-bar {
@@ -280,10 +281,10 @@
                 
                 @if(auth()->user()->canAccess('export_csv_pdf'))
                 <div style="display:flex; gap:0.5rem;">
-                    <a href="{{ route('transaksi.export.csv') }}" title="Unduh CSV" style="padding: 0.4rem 0.8rem; font-size: 0.75rem; background: #fff; color: #374151; border-radius: 6px; text-decoration: none; font-weight: 600; border: 1px solid #d1d5db; display: flex; align-items: center; gap: 0.4rem;">
+                    <a href="/transaksi/export/csv" title="Unduh CSV" style="padding: 0.4rem 0.8rem; font-size: 0.75rem; background: #fff; color: #374151; border-radius: 6px; text-decoration: none; font-weight: 600; border: 1px solid #d1d5db; display: flex; align-items: center; gap: 0.4rem;">
                         <span>📄</span> CSV
                     </a>
-                    <a href="{{ route('transaksi.export.pdf') }}" title="Unduh PDF" style="padding: 0.4rem 0.8rem; font-size: 0.75rem; background: #fff; color: #374151; border-radius: 6px; text-decoration: none; font-weight: 600; border: 1px solid #d1d5db; display: flex; align-items: center; gap: 0.4rem;">
+                    <a href="/transaksi/export/pdf" title="Unduh PDF" style="padding: 0.4rem 0.8rem; font-size: 0.75rem; background: #fff; color: #374151; border-radius: 6px; text-decoration: none; font-weight: 600; border: 1px solid #d1d5db; display: flex; align-items: center; gap: 0.4rem;">
                         <span>📕</span> PDF
                     </a>
                 </div>
@@ -291,7 +292,8 @@
             </div>
             <div class="card-body" style="padding:0;">
                 @if($transaksi->count() > 0)
-                    <table class="data-table">
+                    <div class="table-responsive" style="width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch;">
+                    <table class="data-table" style="min-width: 800px; width: 100%;">
                         <thead>
                             <tr>
                                 <th>Kategori</th>
@@ -339,11 +341,11 @@
                                 </td>
                                 <td style="text-align: right;">
                                     <div style="display: flex; gap: 0.5rem; justify-content: flex-end; align-items: center;">
-                                        <a href="{{ route('transaksi.edit', $t->id) }}" style="color: var(--primary); text-decoration: none; font-size: 1.1rem;" title="Edit">✏️</a>
-                                        <form action="{{ route('transaksi.destroy', $t->id) }}" method="POST" onsubmit="return confirm('Hapus transaksi ini?')">
+                                        <a href="/transaksi/{{ $t->id }}/edit" style="display: inline-block; padding: 0.5rem; color: var(--primary); text-decoration: none; font-size: 1.25rem;" title="Edit">✏️</a>
+                                        <form id="form-delete-{{ $t->id }}" action="/transaksi/{{ $t->id }}" method="POST" style="margin: 0;">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" style="background: none; border: none; cursor: pointer; font-size: 1.1rem; padding: 0;" title="Hapus">🗑️</button>
+                                            <button type="button" onclick="confirmDelete('form-delete-{{ $t->id }}')" style="display: inline-block; background: none; border: none; cursor: pointer; font-size: 1.25rem; padding: 0.5rem;" title="Hapus">🗑️</button>
                                         </form>
                                     </div>
                                 </td>
@@ -351,6 +353,7 @@
                             @endforeach
                         </tbody>
                     </table>
+                    </div>
                 @else
                     <div class="empty-state" style="padding:3rem;">
                         <div class="empty-icon">📭</div>
@@ -380,6 +383,30 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
+
+function confirmDelete(formId) {
+    if (typeof Swal === 'undefined') {
+        if (confirm('Hapus transaksi ini? Data yang dihapus tidak dapat dikembalikan.')) {
+            document.getElementById(formId).submit();
+        }
+        return;
+    }
+    
+    Swal.fire({
+        title: 'Hapus Transaksi?',
+        text: "Data yang dihapus tidak dapat dikembalikan!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#ef4444',
+        cancelButtonColor: '#9ca3af',
+        confirmButtonText: 'Ya, hapus!',
+        cancelButtonText: 'Batal'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            document.getElementById(formId).submit();
+        }
+    })
+}
 </script>
 </body>
 </html>

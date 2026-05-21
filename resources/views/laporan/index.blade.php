@@ -181,7 +181,7 @@
         {{-- Filter --}}
         <div class="filter-bar">
             <span style="font-size:0.85rem;font-weight:600;color:var(--dark-2);">Periode:</span>
-            <form method="GET" action="/laporan" style="display:flex;gap:0.5rem;">
+            <form method="GET" action="{{ route('laporan.index') }}" style="display:flex;gap:0.5rem;">
                 <select name="bulan" onchange="this.form.submit()">
                     @foreach(range(1,12) as $m)
                         <option value="{{ $m }}" {{ $bulan == $m ? 'selected' : '' }}>
