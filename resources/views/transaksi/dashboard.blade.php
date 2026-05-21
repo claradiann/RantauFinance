@@ -145,7 +145,7 @@
                 <div class="card">
                     <div class="card-header">
                         <h3>📊 Grafik Keuangan 6 Bulan</h3>
-                        <a href="#" class="card-action">Lihat Detail</a>
+                        <a href="{{ route('laporan.index') }}" class="card-action">Lihat Detail</a>
                     </div>
                     <div class="card-body">
                         @if(auth()->user()->canAccess('dashboard_grafik_basic'))

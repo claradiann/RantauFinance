@@ -15,6 +15,7 @@
         @media (max-width: 768px) {
             .mobile-header { display: flex; }
         }
+        .pagination-wrap svg { width: 20px; height: 20px; }
     </style>
 </head>
 

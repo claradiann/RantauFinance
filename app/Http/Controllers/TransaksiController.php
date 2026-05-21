@@ -128,7 +128,7 @@ class TransaksiController extends Controller
     {
         $transaksi = Transaksi::findOrFail($id);
 
-        if ($transaksi->user_id !== Auth::id()) {
+        if ($transaksi->user_id != Auth::id()) {
             abort(403);
         }
 
@@ -141,7 +141,7 @@ class TransaksiController extends Controller
     {
         $transaksi = Transaksi::findOrFail($id);
 
-        if ($transaksi->user_id !== Auth::id()) {
+        if ($transaksi->user_id != Auth::id()) {
             abort(403);
         }
 
@@ -170,7 +170,7 @@ class TransaksiController extends Controller
     {
         $transaksi = Transaksi::findOrFail($id);
 
-        if ($transaksi->user_id !== Auth::id()) {
+        if ($transaksi->user_id != Auth::id()) {
             abort(403);
         }
 

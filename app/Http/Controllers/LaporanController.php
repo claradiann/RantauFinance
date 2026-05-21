@@ -12,8 +12,8 @@ class LaporanController extends Controller
     public function index(Request $request, FinanceService $finance)
     {
         $userId = Auth::id();
-        $bulan  = $request->bulan ?? Carbon::now()->month;
-        $tahun  = $request->tahun ?? Carbon::now()->year;
+        $bulan  = (int) ($request->bulan ?? Carbon::now()->month);
+        $tahun  = (int) ($request->tahun ?? Carbon::now()->year);
 
         $pemasukan           = $finance->pemasukanBulanIni($userId, $bulan, $tahun);
         $pengeluaran         = $finance->pengeluaranBulanIni($userId, $bulan, $tahun);
@@ -24,7 +24,9 @@ class LaporanController extends Controller
         $laporanTahunan      = $finance->laporanTahunan($userId, $tahun);
 
         $smartInsight = null;
-        if (Auth::user()->effectivePlan() === 'profesional') {
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+        if ($user->effectivePlan() === 'profesional') {
             $insightMessages = [];
             if ($pengeluaran > $pemasukan) {
                 $insightMessages[] = "⚠️ Pengeluaran di periode ini melebihi pemasukan (Defisit Rp " . number_format($pengeluaran - $pemasukan, 0, ',', '.') . "). Pertimbangkan untuk mengevaluasi budget.";
