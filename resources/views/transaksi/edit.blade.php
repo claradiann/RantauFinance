@@ -258,6 +258,9 @@
                 <form action="{{ route('transaksi.update', $transaksi->id) }}" method="POST" id="transactionForm">
                     @csrf
                     @method('PUT')
+                    @if(isset($returnTo))
+                        <input type="hidden" name="return_to" value="{{ $returnTo }}">
+                    @endif
 
                     {{-- Tipe Transaksi --}}
                     <div class="form-group">
@@ -323,7 +326,7 @@
 
                     {{-- Actions --}}
                     <div class="form-actions">
-                        <a href="/transaksi" class="btn-cancel">Batal</a>
+                        <a href="{{ $returnTo ?? '/transaksi' }}" class="btn-cancel">Batal</a>
                         <button type="submit" class="btn-submit">
                             💾 Perbarui Transaksi
                         </button>

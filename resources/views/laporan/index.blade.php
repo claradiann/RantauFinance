@@ -7,6 +7,7 @@
     <link rel="icon" type="image/png" href="{{ asset('images/logo_RD.png') }}">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}?v=1.3">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         .summary-row {
             display: grid;
@@ -178,6 +179,12 @@
             </div>
         </div>
 
+        @if(session('success'))
+            <div style="padding:1rem 1.25rem;border-radius:12px;background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.2);color:var(--success);font-size:0.85rem;font-weight:500;margin-bottom:1.5rem;display:flex;align-items:center;gap:0.5rem;">
+                ✅ {{ session('success') }}
+            </div>
+        @endif
+
         {{-- Filter --}}
         <div class="filter-bar">
             <span style="font-size:0.85rem;font-weight:600;color:var(--dark-2);">Periode:</span>
@@ -197,22 +204,54 @@
             </form>
         </div>
 
-        {{-- Smart Insights (Professional Only) --}}
-        @if(isset($smartInsight))
-        <div class="card" style="margin-bottom: 1.5rem; background: linear-gradient(135deg, #f8fafc, #f1f5f9); border: 1px solid #e2e8f0;">
-            <div class="card-header" style="border-bottom: none; padding-bottom: 0;">
-                <h3 style="color: var(--primary); display: flex; align-items: center; gap: 8px;">
-                    <span style="font-size: 1.25rem;">🧠</span> Analisis Laporan Cerdas
+        {{-- Smart Insights --}}
+        @if(auth()->user()->canAccess('insight_otomatis'))
+            @if(isset($smartInsight) && count($smartInsight) > 0)
+            <div class="card" style="margin-bottom: 1.5rem; background: linear-gradient(135deg, #f8fafc, #f1f5f9); border: 1px solid #e2e8f0;">
+                <div class="card-header" style="border-bottom: none; padding-bottom: 0;">
+                    <h3 style="color: var(--primary); display: flex; align-items: center; gap: 8px;">
+                        <span style="font-size: 1.25rem;">🧠</span> Analisis Laporan Cerdas
+                    </h3>
+                </div>
+                <div class="card-body" style="padding-top: 1rem;">
+                    <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.75rem;">
+                        @foreach($smartInsight as $insight)
+                        <li style="font-size: 0.9rem; color: var(--dark); background: white; padding: 1rem 1.25rem; border-radius: 8px; border-left: 4px solid var(--primary); box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                            {!! $insight !!}
+                        </li>
+                        @endforeach
+                    </ul>
+                </div>
+            </div>
+            @endif
+        @else
+        <div class="card" style="margin-bottom: 1.5rem; background: linear-gradient(135deg, #f8fafc, #f1f5f9); border: 1px solid #e2e8f0; position: relative; overflow: hidden;">
+            <div style="padding: 1.5rem 1.5rem 0.5rem;">
+                <h3 style="color: var(--gray); display: flex; align-items: center; gap: 8px; margin-bottom: 1rem;">
+                    <span style="font-size: 1.25rem;">🧠</span> Analisis Laporan Cerdas (Premium)
                 </h3>
             </div>
-            <div class="card-body" style="padding-top: 1rem;">
+            
+            <div style="padding: 0 1.5rem 1.5rem; filter: blur(3px); pointer-events: none; opacity: 0.5;">
                 <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.75rem;">
-                    @foreach($smartInsight as $insight)
-                    <li style="font-size: 0.9rem; color: var(--dark); background: white; padding: 1rem 1.25rem; border-radius: 8px; border-left: 4px solid var(--primary); box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
-                        {!! $insight !!}
+                    <li style="font-size: 0.9rem; background: white; padding: 1rem 1.25rem; border-radius: 8px; border-left: 4px solid var(--primary); box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                        🌟 <strong>Kondisi keuangan sehat!</strong> Anda mencatatkan surplus sebesar **Rp 2.450.000** periode ini. Bagus sekali!
                     </li>
-                    @endforeach
+                    <li style="font-size: 0.9rem; background: white; padding: 1rem 1.25rem; border-radius: 8px; border-left: 4px solid var(--primary); box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                        💰 <strong>Rasio Menabung Baik:</strong> Anda berhasil menabung **35%** dari total pemasukan. Ini memenuhi aturan ideal 20%.
+                    </li>
                 </ul>
+            </div>
+
+            <div style="position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(255, 255, 255, 0.45); backdrop-filter: blur(1px); padding: 1.5rem; text-align: center; z-index: 10;">
+                <div style="font-size: 2.2rem; margin-bottom: 0.5rem;">🔒</div>
+                <h4 style="margin-bottom: 0.5rem; color: var(--dark); font-weight: 700;">Analisis Keuangan Pintar Terkunci</h4>
+                <p style="color: var(--dark-3); font-size: 0.85rem; max-width: 420px; margin-bottom: 1rem; line-height: 1.4;">
+                    Dapatkan insight otomatis tentang rasio menabung, analisis tren pengeluaran harian, perbandingan dengan bulan lalu, dan rekomendasi hemat secara real-time.
+                </p>
+                <a href="/payment/upgrade/profesional" style="display: inline-block; padding: 0.55rem 1.25rem; background: var(--gradient-1); color: white; border-radius: 8px; font-weight: 700; text-decoration: none; font-size: 0.82rem; box-shadow: 0 4px 12px rgba(99,102,241,0.2);">
+                    Upgrade ke Profesional
+                </a>
             </div>
         </div>
         @endif
@@ -339,6 +378,7 @@
                             <th>Tipe</th>
                             <th>Keterangan</th>
                             <th style="text-align:right;">Jumlah</th>
+                            <th style="text-align:right; width: 100px;">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -361,6 +401,16 @@
                             ])>
                                 {{ $tx->kategori->tipe === 'pemasukan' ? '+' : '-' }}Rp {{ number_format($tx->jumlah, 0, ',', '.') }}
                             </td>
+                            <td style="text-align: right;">
+                                <div style="display: flex; gap: 0.5rem; justify-content: flex-end; align-items: center;">
+                                    <a href="/transaksi/{{ $tx->id }}/edit?return_to={{ urlencode(request()->fullUrl()) }}" style="display: inline-block; padding: 0.25rem; color: var(--primary); text-decoration: none; font-size: 1.1rem;" title="Edit">✏️</a>
+                                    <form id="form-delete-report-{{ $tx->id }}" action="/transaksi/{{ $tx->id }}?return_to={{ urlencode(request()->fullUrl()) }}" method="POST" style="margin: 0;">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="button" onclick="confirmDeleteReport('form-delete-report-{{ $tx->id }}')" style="display: inline-block; background: none; border: none; cursor: pointer; font-size: 1.1rem; padding: 0.25rem;" title="Hapus">🗑️</button>
+                                    </form>
+                                </div>
+                            </td>
                         </tr>
                         @endforeach
                     </tbody>
@@ -381,6 +431,30 @@
 function toggleSidebar() {
     document.getElementById('sidebar').classList.toggle('open');
     document.getElementById('sidebarOverlay').classList.toggle('open');
+}
+
+function confirmDeleteReport(formId) {
+    if (typeof Swal === 'undefined') {
+        if (confirm('Hapus transaksi ini? Data yang dihapus tidak dapat dikembalikan.')) {
+            document.getElementById(formId).submit();
+        }
+        return;
+    }
+    
+    Swal.fire({
+        title: 'Hapus Transaksi?',
+        text: "Data yang dihapus tidak dapat dikembalikan!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#ef4444',
+        cancelButtonColor: '#9ca3af',
+        confirmButtonText: 'Ya, hapus!',
+        cancelButtonText: 'Batal'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            document.getElementById(formId).submit();
+        }
+    })
 }
 </script>
 </body>

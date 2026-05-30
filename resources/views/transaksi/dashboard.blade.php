@@ -8,6 +8,7 @@
     <link rel="icon" type="image/png" href="{{ asset('images/logo_RD.png') }}">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}?v=1.3">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body>
@@ -239,16 +240,31 @@
                         @if($transaksiTerbaru->count() > 0)
                         <div class="tx-list">
                             @foreach($transaksiTerbaru as $tx)
-                            <div class="tx-item">
+                            <div class="tx-item" style="display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;">
                                 <div class="tx-icon {{ $tx->kategori->tipe === 'pemasukan' ? 'in' : 'out' }}">
                                     {{ $tx->kategori->tipe === 'pemasukan' ? '💰' : '🛒' }}
                                 </div>
-                                <div class="tx-details">
-                                    <div class="tx-name">{{ $tx->kategori->nama }}</div>
-                                    <div class="tx-date">{{ \Carbon\Carbon::parse($tx->tanggal)->translatedFormat('d M Y') }}</div>
+                                <div class="tx-details" style="flex: 1; min-width: 0;">
+                                    <div class="tx-name" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ $tx->kategori->nama }}</div>
+                                    <div style="display: flex; align-items: center; gap: 6px;">
+                                        <span class="tx-date">{{ \Carbon\Carbon::parse($tx->tanggal)->translatedFormat('d M Y') }}</span>
+                                        @if($tx->keterangan)
+                                            <span style="font-size: 0.75rem; color: var(--gray); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">• {{ Str::limit($tx->keterangan, 15) }}</span>
+                                        @endif
+                                    </div>
                                 </div>
-                                <div class="tx-amount {{ $tx->kategori->tipe === 'pemasukan' ? 'positive' : 'negative' }}">
-                                    {{ $tx->kategori->tipe === 'pemasukan' ? '+' : '-' }}Rp {{ number_format($tx->jumlah, 0, ',', '.') }}
+                                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                    <div class="tx-amount {{ $tx->kategori->tipe === 'pemasukan' ? 'positive' : 'negative' }}" style="white-space: nowrap;">
+                                        {{ $tx->kategori->tipe === 'pemasukan' ? '+' : '-' }}Rp {{ number_format($tx->jumlah, 0, ',', '.') }}
+                                    </div>
+                                    <div class="tx-actions" style="display: flex; gap: 0.25rem; align-items: center;">
+                                        <a href="/transaksi/{{ $tx->id }}/edit?return_to={{ urlencode(request()->fullUrl()) }}" style="text-decoration: none; font-size: 1.1rem; padding: 4px; transition: transform 0.2s;" title="Edit Transaksi">✏️</a>
+                                        <form id="form-delete-dash-{{ $tx->id }}" action="/transaksi/{{ $tx->id }}?return_to={{ urlencode(request()->fullUrl()) }}" method="POST" style="margin: 0; display: inline;">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="button" onclick="confirmDeleteDash('form-delete-dash-{{ $tx->id }}')" style="background: none; border: none; cursor: pointer; font-size: 1.1rem; padding: 4px; display: inline-block; line-height: 1;" title="Hapus Transaksi">🗑️</button>
+                                        </form>
+                                    </div>
                                 </div>
                             </div>
                             @endforeach
@@ -317,6 +333,30 @@
                 });
             });
         });
+
+        function confirmDeleteDash(formId) {
+            if (typeof Swal === 'undefined') {
+                if (confirm('Hapus transaksi ini? Data yang dihapus tidak dapat dikembalikan.')) {
+                    document.getElementById(formId).submit();
+                }
+                return;
+            }
+            
+            Swal.fire({
+                title: 'Hapus Transaksi?',
+                text: "Data yang dihapus tidak dapat dikembalikan!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#9ca3af',
+                confirmButtonText: 'Ya, hapus!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById(formId).submit();
+                }
+            })
+        }
     </script>
 </body>
 

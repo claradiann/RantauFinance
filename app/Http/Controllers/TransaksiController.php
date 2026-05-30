@@ -124,7 +124,7 @@ class TransaksiController extends Controller
 
         return redirect('/dashboard')->with('success', 'Transaksi berhasil ditambahkan!');
     }
-    public function edit(int $id)
+    public function edit(Request $request, int $id)
     {
         $transaksi = Transaksi::findOrFail($id);
 
@@ -133,8 +133,9 @@ class TransaksiController extends Controller
         }
 
         $kategori = Kategori::all();
+        $returnTo = $request->query('return_to');
 
-        return view('transaksi.edit', compact('transaksi', 'kategori'));
+        return view('transaksi.edit', compact('transaksi', 'kategori', 'returnTo'));
     }
 
     public function update(Request $request, int $id)
@@ -163,10 +164,15 @@ class TransaksiController extends Controller
             'keterangan' => $request->keterangan,
         ]);
 
+        $returnTo = $request->input('return_to');
+        if ($returnTo && (str_contains($returnTo, '/dashboard') || str_contains($returnTo, '/laporan') || str_contains($returnTo, '/transaksi'))) {
+            return redirect($returnTo)->with('success', 'Transaksi berhasil diperbarui!');
+        }
+
         return redirect()->route('transaksi.index')->with('success', 'Transaksi berhasil diperbarui!');
     }
 
-    public function destroy(int $id)
+    public function destroy(Request $request, int $id)
     {
         $transaksi = Transaksi::findOrFail($id);
 
@@ -175,6 +181,11 @@ class TransaksiController extends Controller
         }
 
         $transaksi->delete();
+
+        $returnTo = $request->query('return_to');
+        if ($returnTo && (str_contains($returnTo, '/dashboard') || str_contains($returnTo, '/laporan') || str_contains($returnTo, '/transaksi'))) {
+            return redirect($returnTo)->with('success', 'Transaksi berhasil dihapus!');
+        }
 
         return redirect()->route('transaksi.index')->with('success', 'Transaksi berhasil dihapus!');
     }
